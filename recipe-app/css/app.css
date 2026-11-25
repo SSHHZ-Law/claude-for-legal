@@ -64,6 +64,7 @@ main.bare{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 /* ---------- people ---------- */
 .avatar{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:var(--r-round);background:var(--c,#1E1410);color:#FFF7E9;font:800 20px/1 var(--wood);flex:none;text-transform:uppercase}
 .avatar.s{width:28px;height:28px;font-size:15px}
+.avatar.xs{width:20px;height:20px;font-size:11.5px}
 .avatar.l{width:84px;height:84px;font-size:44px}
 .person{display:inline-flex;align-items:center;gap:var(--s2);font-weight:700;min-height:var(--tap);padding-right:var(--s2)}
 .by{display:flex;gap:9px;align-items:center;font-size:15px;line-height:1.3}
@@ -102,7 +103,7 @@ main.bare{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .slip .in{padding:10px var(--s3) 14px}
 .k{font:var(--t-micro);color:var(--red-ink)}
 .slip h3{font:800 23px/.96 var(--wood);text-transform:uppercase;margin-top:6px;overflow-wrap:anywhere}
-.from{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+.from{font-size:13.5px;color:var(--ink-2);margin-top:7px;display:flex;align-items:center;gap:6px}
 /* poster: what an entry looks like with no photo */
 .poster{display:grid;align-content:center;container-type:inline-size;background:#1E1410;color:#EBAA1C;overflow:hidden;width:100%}
 /* optical size pinned to the display cut so measured widths match what is drawn */
@@ -141,6 +142,7 @@ main.bare{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .only{display:flex;align-items:center;gap:6px}
 .lede.only{align-items:flex-start}
 .lede.only svg{margin-top:1px}
+.field + .hint,.seg + .hint{margin:-8px var(--s4) var(--s4);font:var(--t-small);color:var(--ink-2)}
 .row{display:flex;align-items:center;gap:var(--s4);margin:var(--s3) var(--s4) 0}
 .field input[type=date]{min-height:54px}
 
@@ -280,6 +282,8 @@ label.btn{cursor:pointer;position:relative}
 .more .addshot:focus-within{outline:3px solid var(--focus);outline-offset:-3px}
 .banner{background:var(--board);color:var(--on-board);padding:var(--s4);display:grid;gap:var(--s3);font:var(--t-body)}
 .banner .btn{border-color:var(--mustard);color:var(--mustard)}
+.lockbar{background:var(--board);color:var(--on-board);padding:11px var(--s4);display:flex;align-items:center;gap:var(--s2);font:600 15px/1.3 var(--sans)}
+.lockbar svg{color:var(--mustard)}
 
 /* add: pick a kind */
 .choose{background:var(--board);color:var(--on-board);margin:var(--s5) 0 0;padding:var(--s2) var(--s4) var(--s4)}

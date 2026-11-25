@@ -12,12 +12,12 @@
 // Shapes
 //   person  { id, name, color, about }
 //   entry   { id, kind: recipe|sauce|method|find|place, title, by, at, note, photos: [{ src, by, credit }],
-//             ...fields for its kind, trashedAt, trashedBy }
+//             ...fields for its kind, private, trashedAt, trashedBy }
 //   verdict { id, entryId, by, rating: 1-5, note, at }   one per person per entry
 //   note    { id, by, date: 'YYYY-MM-DD', title, text, cut, heat, time, wood, photo: { src, by }, sharedId, at }
 //
-// Private notebook: notes are only ever handed back to the person who wrote them, and they never
-// appear in entries(), search() or the trash. When this moves to a shared Sheet, decide first
+// Private things: an entry with `private: true` and every note belong to one person. They are only
+// ever handed back to that person, and they never appear in entries(), other people's search, or the trash. When this moves to a shared Sheet, decide first
 // whether notes should sync at all: whoever owns the Sheet can read every row in it.
 
 import { seed } from './seed.js';
@@ -77,20 +77,37 @@ export const data = {
 
   // ---- entries ----
   async entries({ kind, by } = {}) {
-    return copy(read().entries.filter(e => !e.trashedAt && (!kind || e.kind === kind) && (!by || e.by === by)).sort(newest));
+    return copy(read().entries.filter(e => !e.trashedAt && !e.private && (!kind || e.kind === kind) && (!by || e.by === by)).sort(newest));
   },
-  async entry(id) { const e = read().entries.find(e => e.id === id); return e ? copy(e) : null; },
+  // `viewerId` is who is asking. A private entry only comes back for the person who owns it.
+  async entry(id, viewerId) {
+    const e = read().entries.find(e => e.id === id);
+    return e && (!e.private || e.by === viewerId) ? copy(e) : null;
+  },
+  async privateEntries(ownerId) { return copy(read().entries.filter(e => e.private && e.by === ownerId).sort(newest)); },
+  // Move an entry between someone's private page and the group. Only its owner can.
+  async setPrivate(id, ownerId, isPrivate, at) {
+    const e = read().entries.find(e => e.id === id);
+    if (!e || e.by !== ownerId) return false;
+    e.private = isPrivate; e.at = at || nowIso(); write(); return true;
+  },
+  // Private entries are deleted outright (the shared trash would expose them). Returns the entry so the app can offer Undo.
+  async deletePrivate(id, ownerId) {
+    const d = read(), i = d.entries.findIndex(e => e.id === id && e.private && e.by === ownerId);
+    if (i < 0) return null;
+    const [gone] = d.entries.splice(i, 1); write(); return copy(gone);
+  },
   async saveEntry(entry) {
     const d = read();
     const i = d.entries.findIndex(e => e.id === entry.id);
     if (i >= 0) d.entries[i] = { ...d.entries[i], ...entry };
-    else d.entries.push(entry = { photos: [], ...entry, id: uid(entry.kind[0]), at: nowIso() });
+    else d.entries.push(entry = { photos: [], ...entry, id: entry.id || uid(entry.kind[0]), at: entry.at || nowIso() });
     write();
     return copy(i >= 0 ? d.entries[i] : entry);
   },
   async trashEntry(id, byId) {
     const e = read().entries.find(e => e.id === id);
-    if (!e || e.by !== byId) return false;          // only the person who added it can trash it
+    if (!e || e.by !== byId || e.private) return false;   // only the adder can trash it; private entries never go to the shared trash
     e.trashedAt = nowIso(); e.trashedBy = byId; write(); return true;
   },
   async restoreEntry(id) {                           // anyone can restore
@@ -101,12 +118,12 @@ export const data = {
   async trashed() {
     return copy(read().entries.filter(e => e.trashedAt).sort((a, b) => (a.trashedAt < b.trashedAt ? 1 : -1)));
   },
-  async search(q) {
+  async search(q, viewerId) {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean);
     if (!words.length) return [];
     const names = Object.fromEntries(read().people.map(p => [p.id, p.name]));
     return copy(read().entries.filter(e => {
-      if (e.trashedAt) return false;
+      if (e.trashedAt || (e.private && e.by !== viewerId)) return false;
       const hay = [e.title, e.aka, e.note, e.city, e.area, e.order, e.maker, e.goodOn, e.cut, e.wood, e.type, names[e.by], ...(e.ingredients || [])].join(' ').toLowerCase();
       return words.every(w => hay.includes(w));
     }).sort(newest));
@@ -115,7 +132,7 @@ export const data = {
   // ---- verdicts ("I made this / tried this / went here") ----
   async verdicts({ entryId, by, limit } = {}) {
     const d = read();
-    const live = new Set(d.entries.filter(e => !e.trashedAt).map(e => e.id));
+    const live = new Set(d.entries.filter(e => !e.trashedAt && !e.private).map(e => e.id));
     let list = d.marks.filter(m => (!entryId || m.entryId === entryId) && (!by || m.by === by) && (entryId || live.has(m.entryId))).sort(newest);
     if (limit) list = list.slice(0, limit);
     return copy(list);

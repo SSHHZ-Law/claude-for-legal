@@ -76,9 +76,15 @@ function fit(text, room) {
   }
   return 7;
 }
+// On the big cards the title is printed right below the poster, so the poster says something else:
+// the entry's one-liner, what to order, what it goes on, who makes it, or a short first sentence of the note.
+function posterLine(e) {
+  const first = (e.note || '').split(/(?<=[.!?])\s/)[0].replace(/[.]$/, '');
+  return e.aka || (e.kind === 'place' && e.order) || (e.goodOn && 'For ' + e.goodOn) || e.maker || (first && first.length <= 46 ? first : '') || e.title;
+}
 // What an entry looks like with no photo. `mini` is for thumbnails: first word only.
-export function poster(e, { room = 0.86, mini = false } = {}) {
-  const text = mini ? e.title.split(/[\s,]+/)[0] : e.title;
+export function poster(e, { room = 0.86, mini = false, line = false } = {}) {
+  const text = mini ? e.title.split(/[\s,]+/)[0] : line ? posterLine(e) : e.title;
   return `<div class="cover poster p${hash(e.id) % 3}"><span style="--fs:${fit(text, room)}cqw">${esc(text)}</span></div>`;
 }
 export const photoTag = (ph, ctx) => {
@@ -86,9 +92,9 @@ export const photoTag = (ph, ctx) => {
   return who ? `<span class="phototag">Photo: ${esc(who)}</span>` : '';
 };
 // An entry's picture: its first photo, or a type poster when it has none.
-export function cover(e, ctx, { tag = false, room, mini } = {}) {
+export function cover(e, ctx, { tag = false, room, mini, line } = {}) {
   const ph = e.photos?.[0];
-  if (!ph) return poster(e, { room, mini });
+  if (!ph) return poster(e, { room, mini, line });
   return `<div class="cover shot"><img src="${esc(data.photoUrl(ph.src))}" alt="" loading="lazy">${tag ? photoTag(ph, ctx) : ''}</div>`;
 }
 
@@ -108,8 +114,13 @@ export function whoHas(e, verdicts, ctx) {
   return ` ${list(names)} ${names.length > 1 ? 'have' : 'has'} ${KINDS[e.kind].have}.`;
 }
 
+// Who put it up: their coloured initial and name. On a private entry, a lock instead.
+export const from = (e, ctx) => e.private
+  ? `<p class="from">${icon('lock', 16, 2)}Only you</p>`
+  : `<p class="from">${avatar(ctx.person(e.by), 'xs')}from ${esc(ctx.name(e.by))}</p>`;
+
 export function ticket(e, ctx, { stamp, verdicts = [] } = {}) {
-  return `<a class="ticket" href="#/e/${e.id}">${cover(e, ctx, { tag: true })}
+  return `<a class="ticket" href="#/e/${e.id}">${cover(e, ctx, { tag: true, line: true })}
   <div class="in">${stamp ? `<span class="stamp">${esc(stamp)}</span>` : ''}
     <h2>${esc(e.title)}</h2>${e.aka ? `<p class="aka">${esc(e.aka)}</p>` : ''}
     <p class="by">${avatar(ctx.person(e.by), 's')}<span><b>${esc(ctx.name(e.by))}</b> put this up ${onDay(e.at)}.${esc(whoHas(e, verdicts, ctx))}</span></p>
@@ -117,7 +128,7 @@ export function ticket(e, ctx, { stamp, verdicts = [] } = {}) {
   </div></a>`;
 }
 export const slip = (e, ctx, { label } = {}) => `<a class="slip" href="#/e/${e.id}">${cover(e, ctx)}
-  <div class="in"><p class="k">${esc(label || kindWord(e) + (e.kind === 'place' && e.city ? ', ' + e.city : ''))}</p><h3>${esc(e.title)}</h3><p class="from">from ${esc(ctx.name(e.by))}</p></div></a>`;
+  <div class="in"><p class="k">${esc(label || kindWord(e) + (e.kind === 'place' && e.city ? ', ' + e.city : ''))}</p><h3>${esc(e.title)}</h3>${from(e, ctx)}</div></a>`;
 
 // One friend's rating and note. `entry` is passed on screens where the card needs to say what it is about.
 export function verdictCard(v, ctx, { entry, past = 'made it', change = false } = {}) {

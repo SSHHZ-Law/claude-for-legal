@@ -132,6 +132,18 @@ export function seed(nowMs) {
       city: 'Lockhart', area: 'Off the square', order: 'Fatty brisket, original sausage, no sauce', link: 'https://example.com/hackberry',
       note: 'Meat market first, restaurant second. Butcher paper, white bread, a knife if you ask.' },
 
+    // ---- private: only the person who added these sees them
+    { id: 'x-john-ribs', kind: 'recipe', private: true, by: 'john', at: ago(3), title: 'Braised short ribs, still testing', aka: 'Not ready for the group',
+      photos: [], serves: '4', cut: 'English-cut short ribs', heat: '300°F', time: '3½ hr',
+      note: 'Third attempt. The sauce is close but still too sweet.',
+      ingredients: ['4 lb bone-in short ribs', '1 tbsp kosher salt', '1 onion, sliced', '4 cloves garlic', '2 tbsp tomato paste', '2 cups red wine', '2 cups beef stock', '2 dried guajillo chiles'],
+      steps: ['Salt the ribs and sear them hard over direct heat.', 'Soften the onion and garlic in a Dutch oven on the grill. Stir in the tomato paste.', 'Add the wine, stock and chiles. Nestle the ribs in.', 'Cover and braise over indirect heat at 300°F until a fork slides in, about 3 hours.'] },
+    { id: 'x-john-salt', kind: 'sauce', type: 'Rub', private: true, by: 'john', at: ago(13), title: 'House steak salt', photos: [], goodOn: 'Ribeye, tri-tip',
+      note: 'Mine. Not sharing until I stop changing it.',
+      ingredients: ['3 tbsp flaky salt', '1 tbsp coarse black pepper', '1 tsp porcini powder', '½ tsp granulated garlic'], steps: ['Grind the pepper fresh. Mix and keep it in a tin.'] },
+    { id: 'x-marcus-inject', kind: 'sauce', type: 'Sauce', private: true, by: 'marcus', at: ago(8), title: 'Competition brisket injection', photos: [], goodOn: 'Brisket',
+      note: 'Nobody gets this one.', ingredients: ['2 cups beef stock', '2 tbsp Worcestershire sauce'], steps: ['Whisk and inject the flat.'] },
+
     // ---- already in the trash, so the trash has something to show
     { id: 'r-wings', kind: 'recipe', by: 'teo', at: ago(42), title: 'Lemon pepper wings, first try', photos: [], note: 'Too salty. Trashing this until I fix it.',
       ingredients: ['2 lb wings', '2 tbsp lemon pepper'], steps: ['Grill until crisp.'], trashedAt: ago(6), trashedBy: 'teo' },

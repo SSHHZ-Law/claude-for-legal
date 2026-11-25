@@ -9,7 +9,7 @@ const routes = [
   [/^\/?$/, V.home], [/^\/k\/([\w-]+)$/, V.list], [/^\/e\/([\w-]+)$/, V.detail],
   [/^\/add$/, V.addPick], [/^\/add\/(\w+)$/, V.form], [/^\/edit\/([\w-]+)$/, V.edit], [/^\/made\/([\w-]+)$/, V.made],
   [/^\/friends$/, V.friends], [/^\/p\/([\w-]+)$/, V.profile], [/^\/you$/, V.you], [/^\/who$/, V.who],
-  [/^\/trash$/, V.trash], [/^\/search$/, V.search], [/^\/notebook$/, V.notebook], [/^\/note\/([\w-]+)$/, V.noteForm],
+  [/^\/trash$/, V.trash], [/^\/search$/, V.search], [/^\/private$/, V.privatePage], [/^\/note\/([\w-]+)$/, V.noteForm],
 ];
 const path = () => location.hash.replace(/^#/, '') || '/';
 const go = (to, replace) => replace ? location.replace('#' + to) : (location.hash = to);
@@ -71,7 +71,7 @@ function applyTheme(t) { t === 'auto' ? delete document.documentElement.dataset.
 const actions = {
   back() { history.length > 1 && trail.length > 1 ? history.back() : go('/'); },
   async copy(el) {
-    const e = await data.entry(el.dataset.id);
+    const e = await data.entry(el.dataset.id, ctx.me.id);
     toast(await copyText(toText(e, ctx)) ? 'Copied as text' : 'Couldn’t copy. Your browser blocked the clipboard.');
   },
   async trash(el) {
@@ -81,10 +81,22 @@ const actions = {
     toast('Moved to trash', async () => { await data.restoreEntry(id); toast('Restored'); render(); });
   },
   async restore(el) { await data.restoreEntry(el.dataset.id); toast('Restored'); render(); },
+  async 'share-entry'(el) {
+    const id = el.dataset.id, was = await data.entry(id, ctx.me.id);
+    if (!was || !(await data.setPrivate(id, ctx.me.id, false))) return;
+    await render();
+    toast('Shared with the group', async () => { await data.setPrivate(id, ctx.me.id, true, was.at); toast('Private again'); render(); });
+  },
+  async 'delete-private'(el) {
+    const gone = await data.deletePrivate(el.dataset.id, ctx.me.id);
+    if (!gone) return;
+    go('/private', true);
+    toast('Deleted', async () => { await data.saveEntry(gone); toast('Restored'); render(); });
+  },
   async 'delete-note'(el) {
     const gone = await data.deleteNote(el.dataset.id, ctx.me.id);
     if (!gone) return;
-    go('/notebook', true);
+    go('/private', true);
     toast('Note deleted', async () => { await data.saveNote(gone); toast('Note restored'); render(); });
   },
   async 'pick-me'(el) { await data.setMe(el.dataset.id); go('/', true); if (path() === '/') render(); },
@@ -130,12 +142,15 @@ document.addEventListener('submit', async ev => {
   if (form.dataset.form === 'entry') {
     const first = form.querySelector('[required]:invalid') || [...form.querySelectorAll('[required]')].find(i => !i.value.trim());
     if (first) { first.focus(); return toast(`Add a ${first.name === 'title' ? 'name' : first.name} first.`); }
-    const kind = form.dataset.kind, old = form.dataset.id ? await data.entry(form.dataset.id) : null;
+    const kind = form.dataset.kind, old = form.dataset.id ? await data.entry(form.dataset.id, ctx.me.id) : null;
     const fromNote = form.dataset.from ? await data.note(form.dataset.from, ctx.me.id) : null;
     const e = { ...(old || { kind, by: ctx.me.id }), title: get('title'), note: get('note') };
     for (const k of ['aka', 'serves', 'cut', 'heat', 'time', 'wood', 'pullAt', 'goodOn', 'type', 'maker', 'price', 'where', 'link', 'city', 'area', 'order']) if (fd.has(k)) e[k] = get(k);
     for (const k of ['ingredients', 'steps']) if (fd.has(k)) e[k] = linesOf(fd.get(k));
     if (e.link && !/^https?:\/\//i.test(e.link)) e.link = 'https://' + e.link;
+    const wasPrivate = !!old?.private;
+    if (fd.has('audience')) e.private = fd.get('audience') === 'private';
+    if (wasPrivate && !e.private) e.at = new Date().toISOString();   // it is new to the group today
     button.disabled = true;
     try {
       if (hasFile) e.photos = [await data.addPhoto(file, ctx.me.id), ...(old?.photos || []).slice(1)];
@@ -143,7 +158,7 @@ document.addEventListener('submit', async ev => {
       const saved = await data.saveEntry(e);
       if (fromNote) await data.saveNote({ id: fromNote.id, sharedId: saved.id });
       go('/e/' + saved.id, true);
-      toast(fromNote ? 'Shared with the group' : `${cap(KINDS[kind].one)} saved`);
+      toast(saved.private ? `${cap(KINDS[kind].one)} saved, just for you` : (fromNote || wasPrivate) ? 'Shared with the group' : `${cap(KINDS[kind].one)} saved`);
     } catch { button.disabled = false; toast('That didn’t save. Try again, or try a smaller photo.'); }
   }
 
@@ -157,7 +172,7 @@ document.addEventListener('submit', async ev => {
       if (hasFile) n.photo = await data.addPhoto(file, ctx.me.id);
       const saved = await data.saveNote(n);
       if (ev.submitter?.value === 'share') return go('/add?from=' + saved.id, true);
-      go('/notebook', true);
+      go('/private', true);
       toast('Note saved');
     } catch { button.disabled = false; toast('That didn’t save. Try again, or try a smaller photo.'); }
   }

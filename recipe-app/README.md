@@ -43,8 +43,10 @@ Sheet: every function is already async and returns plain JSON-shaped objects. Ph
 need somewhere to live at that point (for example a Drive folder the script writes to);
 `addPhoto()` is the single place that changes.
 
-Each person also has a private notebook (`#/notebook`). Notes are only returned to the person who
-wrote them and never appear in lists, search or the trash. Before syncing to a Sheet, decide
+Each person also has a private page (`#/private`): private recipes and recs (any entry saved as
+"Just me") and a notebook of free-form notes. Private things are only returned to the person who
+owns them and never appear in the group's lists, other people's search, or the trash. "Share with
+the group" moves a private entry over; sharing a note copies it into a new entry. Before syncing to a Sheet, decide
 whether notes sync at all: the Sheet's owner can read every row, and without a PIN anyone holding
 the phone can switch names.
 
