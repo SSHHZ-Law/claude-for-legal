@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Butcher Paper: Home</title><link rel="stylesheet" href="../../fonts/fonts.css"><style>
+:root{--paper:#E9BC99;--deli:#FFF7E9;--ink:#1E1410;--ink2:#5B4336;--red:#BE2A1B;--mustard:#EBAA1C;
+--wood:'Big Shoulders','Arial Narrow',sans-serif;--sans:'Archivo',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.500 var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:110px}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;object-fit:cover}
+.top{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px}
+.mark{font:900 38px/.900 var(--wood);text-transform:uppercase;letter-spacing:.005em;color:var(--red);display:flex;align-items:center;gap:8px}
+.avatar{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--ink);color:var(--deli);font:800 20px/1 var(--wood);flex:none}
+.avatar.s{width:28px;height:28px;font-size:15px}
+.avatar.m{background:#8E2317}.avatar.p{background:#9A6A00}.avatar.d{background:#3F5E2A}.avatar.t{background:#4C3A66}.avatar.l{background:#1F5A63}
+
+/* an order ticket: deli paper with a torn bottom edge */
+.ticket{display:block;background:var(--deli);position:relative;margin:0 16px}
+.ticket::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:8px;background:radial-gradient(circle at 50% 100%,var(--paper) 5.500px,transparent 6px) 0 0/15px 8px repeat-x}
+.ticket img{aspect-ratio:4/3.400}
+.ticket .in{padding:18px 16px 24px;position:relative}
+.stamp{display:inline-block;font:800 16px/1 var(--wood);text-transform:uppercase;letter-spacing:.05em;color:var(--red);border:2.500px solid var(--red);border-radius:4px;padding:5px 9px 4px;transform:rotate(-4deg);background:var(--deli)}
+.ticket .stamp{position:absolute;right:14px;top:-17px}
+.ticket h2{font:900 50px/.900 var(--wood);text-transform:uppercase;letter-spacing:-.005em;text-wrap:balance}
+.ticket .aka{font:italic 500 17px/1.300 var(--sans);color:var(--ink2);margin-top:8px}
+.by{display:flex;gap:9px;align-items:center;margin-top:14px;font-size:15px;line-height:1.300}
+.by b{font-weight:700}
+.strip{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;margin-top:16px;padding-top:12px;border-top:2px solid var(--ink)}
+.strip span{font:800 22px/1 var(--wood);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.strip svg{color:var(--red)}
+
+.head{font:900 30px/1 var(--wood);text-transform:uppercase;margin:34px 16px 12px;display:flex;align-items:baseline;justify-content:space-between}
+.head small{font:500 14px/1 var(--sans);text-transform:none;color:var(--ink2)}
+
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 16px}
+.slip{background:var(--deli);display:block}
+.slip img,.slip .poster{aspect-ratio:1/.860}
+.slip .in{padding:10px 12px 14px}
+.slip .k{font:600 12.500px/1 var(--sans);color:var(--red)}
+.slip h4{font:800 23px/.960 var(--wood);text-transform:uppercase;margin-top:6px}
+.slip .from{font-size:13px;color:var(--ink2);margin-top:6px}
+/* no photo: a hand-set type poster */
+.poster{display:grid;align-content:center;padding:12px;background:var(--ink);color:var(--mustard);font:900 37px/.860 var(--wood);text-transform:uppercase}
+.poster.red{background:var(--red);color:var(--deli)}
+
+/* the menu board: the five kinds as places */
+.board{background:var(--ink);color:var(--deli);margin-top:34px;padding:26px 16px 20px}
+.board h3{font:900 30px/1 var(--wood);text-transform:uppercase;color:var(--mustard);margin-bottom:8px}
+.line{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:8px;min-height:58px;padding-top:10px;border-bottom:1px solid #4a3a31}
+.line:last-child{border-bottom:0}
+.line b{font:900 40px/1 var(--wood);text-transform:uppercase}
+.line i{border-bottom:3px dotted #7a6657;transform:translateY(-7px)}
+.line em{font:900 40px/1 var(--wood);font-style:normal;color:var(--mustard)}
+.line p{grid-column:1/-1;font-size:13.500px;color:#cdb9a6;margin:-2px 0 12px}
+
+.verdict{background:var(--deli);margin:0 16px 10px;padding:14px;display:grid;grid-template-columns:1fr 56px;gap:4px 12px;border-left:5px solid var(--red)}
+.verdict .what{font-size:15px;line-height:1.350}
+.verdict .what b{font-weight:800}
+.verdict q{font:500 17px/1.400 var(--sans);quotes:"“" "”";display:block;margin-top:4px}
+.verdict .when{font-size:13px;color:var(--ink2);margin-top:4px}
+.score{grid-row:1/4;grid-column:2;align-self:start;width:56px;height:56px;border-radius:50%;border:2.500px solid var(--red);color:var(--red);display:grid;place-content:center;justify-items:center;transform:rotate(6deg)}
+.score b{font:900 28px/.800 var(--wood)}
+.score small{font:700 10.500px/1 var(--sans);margin-top:2px}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;background:var(--ink);padding:8px 8px 22px}
+.tab{display:grid;justify-items:center;gap:3px;font:600 11px/1 var(--sans);color:#cdb9a6;min-height:48px;align-content:center}
+.tab.on{color:var(--mustard)}
+.tab.add{color:var(--deli)}
+.tab.add b{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--red);color:var(--deli);margin-top:-34px;border:4px solid var(--paper)}
+
+/* detail */
+.photo{position:relative}
+.photo img{aspect-ratio:4/3.700}
+.photo .ib{position:absolute;top:12px;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--deli);color:var(--ink)}
+.photo .ib.l{left:12px}.photo .ib.r{right:12px}
+.card{margin-top:-44px}
+.card h1{font:900 62px/.860 var(--wood);text-transform:uppercase;letter-spacing:-.005em}
+.pit{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink);margin-top:20px}
+.pit div{padding:9px 12px 10px}
+.pit div:nth-child(odd){border-right:2px solid var(--ink)}
+.pit div:nth-child(-n+2){border-bottom:2px solid var(--ink)}
+.pit dt{font:600 12.500px/1.200 var(--sans);color:var(--ink2)}
+.pit dd{font:800 27px/1 var(--wood);text-transform:uppercase;margin-top:3px}
+.headnote{font:500 18px/1.450 var(--sans);margin-top:20px}
+.headnote cite{display:block;font:400 14px/1 var(--sans);color:var(--ink2);margin-top:8px;font-style:normal}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:58px;font:900 26px/1 var(--wood);text-transform:uppercase;letter-spacing:.02em;border:2.500px solid var(--ink);color:var(--ink);background:transparent;margin:10px 16px 0}
+.btn.pri{background:var(--red);border-color:var(--red);color:var(--deli);margin-top:26px}
+.sheet{background:var(--deli);margin:0 16px;padding:18px 16px 22px}
+.sheet + .sheet{margin-top:12px}
+.sheet h2{font:900 34px/1 var(--wood);text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.sheet h2 small{font:500 14px/1 var(--sans);text-transform:none;color:var(--ink2)}
+.ing{list-style:none}
+.ing li{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:11px 0 2px;font-size:17px}
+.ing i{border-bottom:2px dotted #b9a48f;transform:translateY(-4px)}
+.ing b{font-weight:800}
+.steps{list-style:none;counter-reset:s;margin-top:6px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:10px;font-size:17px;line-height:1.500;padding:12px 0;border-bottom:1px solid #e6d6c2}
+.steps li:last-child{border-bottom:0;padding-bottom:0}
+.steps li::before{content:counter(s);font:900 42px/.900 var(--wood);color:var(--red)}
+</style></head>
+<body>
+<header class="top"><a class="mark" href="home.html"><svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12.500" fill="none" stroke="#1E1410" stroke-width="4"/><circle cx="15" cy="15" r="6.500" fill="none" stroke="#BE2A1B" stroke-width="4"/></svg>Smoke Ring</a><a class="avatar" href="#" aria-label="Your profile">J</a></header>
+
+<a class="ticket" href="detail.html">
+  <img src="../../standins/chuck.svg" alt="">
+  <div class="in">
+    <span class="stamp">New recipe</span>
+    <h2>Smoked chuck roast</h2>
+    <p class="aka">The poor man’s brisket</p>
+    <p class="by"><span class="avatar s m">M</span><span><b>Marcus</b> put this up Sunday. Priya and Dana have made it.</span></p>
+    <p class="strip"><span><svg class="i" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.500V5a2 2 0 1 1 4 0v9.500a4 4 0 1 1-4 0z"/><path d="M12 9v7"/></svg>250°F</span><span><svg class="i" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.500"/><path d="M12 7.500V12l3 2"/></svg>6–7 hr</span><span><svg class="i" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="6.500" cy="12" rx="2.500" ry="4.500"/><path d="M6.500 7.500h10c1.700 0 3 2 3 4.500s-1.300 4.500-3 4.500h-10"/><path d="M11 10.500h4M12 13.500h3"/></svg>Post oak</span></p>
+  </div>
+</a>
+
+<h3 class="head">Also fresh <small>4 more this week</small></h3>
+<div class="pair">
+  <a class="slip" href="#"><img src="../../standins/sardines.svg" alt=""><div class="in"><p class="k">Find</p><h4>Smoked sardines in olive oil</h4><p class="from">from Lena</p></div></a>
+  <a class="slip" href="#"><div class="poster">Coffee-<br>ancho<br>rub</div><div class="in"><p class="k">Rub</p><h4>Coffee-ancho rub</h4><p class="from">from Teo</p></div></a>
+</div>
+
+<section class="board">
+  <h3>The board</h3>
+  <a class="line" href="#"><b>Recipes</b><i></i><em>14</em><p>Newest: Marcus’s smoked chuck roast</p></a>
+  <a class="line" href="#"><b>Rubs &amp; sauces</b><i></i><em>9</em><p>Newest: Teo’s coffee-ancho rub</p></a>
+  <a class="line" href="#"><b>Methods</b><i></i><em>7</em><p>Cut, heat, time and wood</p></a>
+  <a class="line" href="#"><b>Finds</b><i></i><em>11</em><p>Things worth buying</p></a>
+  <a class="line" href="#"><b>Restaurants</b><i></i><em>16</em><p>Los Angeles, Austin, Kansas City, Oakland, Lockhart</p></a>
+</section>
+
+<h3 class="head">Verdicts</h3>
+<div class="verdict"><p class="what"><b>Priya</b> made Marcus’s smoked chuck roast</p><span class="score" role="img" aria-label="5 out of 5"><b>5</b><small>of 5</small></span><q>Wrapped at 165 and it pulled like brisket. Making it again Sunday.</q><p class="when">Yesterday</p></div>
+<div class="verdict"><p class="what"><b>Teo</b> went to Okra &amp; Ash</p><span class="score" role="img" aria-label="4 out of 5"><b>4</b><small>of 5</small></span><q>Get the beef rib. Skip the sides.</q><p class="when">Monday</p></div>
+<div class="verdict"><p class="what"><b>Lena</b> tried Dana’s Alabama white sauce</p><span class="score" role="img" aria-label="4 out of 5"><b>4</b><small>of 5</small></span><q>Halved the horseradish. It still bites.</q><p class="when">Sunday</p></div>
+<nav class="tabs" aria-label="Main">
+<a class="tab on" href="home.html"><svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1z"/></svg>Home</a>
+<a class="tab" href="#"><svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></svg>Search</a>
+<a class="tab add" href="#"><b><svg class="i" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></b>Add</a>
+<a class="tab" href="#"><svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3.200 3-5 6-5s5.400 1.800 6 5"/><circle cx="17" cy="8" r="2.600"/><path d="M16.500 13.200c2.600.2 4.200 1.800 4.700 4.800"/></svg>Friends</a>
+<a class="tab" href="#"><svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.500" r="3.500"/><path d="M5 20c.8-3.800 3.600-5.500 7-5.500s6.200 1.700 7 5.500"/></svg>You</a></nav></body></html>
