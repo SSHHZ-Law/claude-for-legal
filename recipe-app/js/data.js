@@ -14,7 +14,8 @@
 //   entry   { id, kind: recipe|sauce|method|find|place, title, by, at, note, photos: [{ src, by, credit }],
 //             ...fields for its kind, private, trashedAt, trashedBy }
 //   verdict { id, entryId, by, rating: 1-5, note, at }   one per person per entry
-//   note    { id, by, date: 'YYYY-MM-DD', title, text, cut, heat, time, wood, photo: { src, by }, sharedId, at }
+//   note    { id, by, date: 'YYYY-MM-DD', title, text, cut, heat, time, wood, photo: { src, by }, aboutId, sharedId, at }
+//           aboutId pins a private note to one entry; sharedId records the entry a note was shared as
 //
 // Private things: an entry with `private: true` and every note belong to one person. They are only
 // ever handed back to that person, and they never appear in entries(), other people's search, or the trash. When this moves to a shared Sheet, decide first
@@ -147,8 +148,8 @@ export const data = {
   },
 
   // ---- private notebook ----
-  async notes(ownerId) {
-    return copy((read().notes || []).filter(n => n.by === ownerId).sort((a, b) => (a.date === b.date ? (a.at < b.at ? 1 : -1) : (a.date < b.date ? 1 : -1))));
+  async notes(ownerId, { aboutId } = {}) {
+    return copy((read().notes || []).filter(n => n.by === ownerId && (!aboutId || n.aboutId === aboutId)).sort((a, b) => (a.date === b.date ? (a.at < b.at ? 1 : -1) : (a.date < b.date ? 1 : -1))));
   },
   async note(id, ownerId) { const n = (read().notes || []).find(n => n.id === id && n.by === ownerId); return n ? copy(n) : null; },
   async saveNote(note) {

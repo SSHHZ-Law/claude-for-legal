@@ -46,7 +46,8 @@ need somewhere to live at that point (for example a Drive folder the script writ
 Each person also has a private page (`#/private`): private recipes and recs (any entry saved as
 "Just me") and a notebook of free-form notes. Private things are only returned to the person who
 owns them and never appear in the group's lists, other people's search, or the trash. "Share with
-the group" moves a private entry over; sharing a note copies it into a new entry. Before syncing to a Sheet, decide
+the group" moves a private entry over; sharing a note copies it into a new entry. A note can be
+pinned to one entry (`aboutId`), in which case it also shows on that entry's page, to its writer only. Before syncing to a Sheet, decide
 whether notes sync at all: the Sheet's owner can read every row, and without a PIN anyone holding
 the phone can switch names.
 

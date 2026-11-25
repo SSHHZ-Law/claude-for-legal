@@ -170,7 +170,7 @@ export function seed(nowMs) {
   ];
   // ---- private notebooks. Each person only ever sees their own.
   const notes = [
-    { id: 'n-john-1', by: 'john', date: dayAgo(2), at: ago(2), title: 'Tri-tip for six', cut: 'Tri-tip, 2.6 lb', heat: '225°F, then direct', time: '70 min', wood: 'Red oak',
+    { id: 'n-john-1', by: 'john', date: dayAgo(2), at: ago(2), aboutId: 'r-tritip', title: 'Tri-tip for six', cut: 'Tri-tip, 2.6 lb', heat: '225°F, then direct', time: '70 min', wood: 'Red oak',
       text: 'Pulled at 126 and it carried over to 133, a touch past where I want it. Pull at 122 next time.\nChimichurri needed more vinegar.' },
     { id: 'n-john-2', by: 'john', date: dayAgo(9), at: ago(9), title: 'Kettle vents',
       text: 'Bottom vent a pencil-width open, top vent fully open. Holds 250 for about four hours on one chimney. Stop fiddling with it.' },

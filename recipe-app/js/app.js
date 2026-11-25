@@ -167,12 +167,13 @@ document.addEventListener('submit', async ev => {
     const old = form.dataset.id ? await data.note(form.dataset.id, ctx.me.id) : null;
     const n = { ...(old || { by: ctx.me.id }), title: get('title'), text: get('text'), date: get('date') || old?.date || today() };
     for (const k of ['cut', 'heat', 'time', 'wood']) n[k] = get(k);
+    if (fd.has('aboutId')) n.aboutId = get('aboutId');
     button.disabled = true;
     try {
       if (hasFile) n.photo = await data.addPhoto(file, ctx.me.id);
       const saved = await data.saveNote(n);
       if (ev.submitter?.value === 'share') return go('/add?from=' + saved.id, true);
-      go('/private', true);
+      go(saved.aboutId && !old ? '/e/' + saved.aboutId : '/private', true);
       toast('Note saved');
     } catch { button.disabled = false; toast('That didn’t save. Try again, or try a smaller photo.'); }
   }

@@ -143,10 +143,11 @@ export function verdictCard(v, ctx, { entry, past = 'made it', change = false } 
 // A private notebook page. Only ever rendered for the person who wrote it.
 export const noteDay = ymd => { const [y, m, d] = String(ymd).split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
 export const today = () => { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
-export function noteCard(n) {
+// `about` is the entry this note is pinned to, when the card should say so.
+export function noteCard(n, about) {
   const pic = n.photo ? `<img src="${esc(data.photoUrl(n.photo.src))}" alt="" loading="lazy">` : '';
   return `<a class="pnote${pic ? ' has' : ''}" href="#/note/${n.id}"><div><p class="k">${esc(noteDay(n.date))}${n.sharedId ? ', shared with the group' : ''}</p>
-  ${n.title ? `<h3>${esc(n.title)}</h3>` : ''}${n.text ? `<p class="txt">${esc(n.text)}</p>` : ''}${strip(n)}</div>${pic}</a>`;
+  ${n.title ? `<h3>${esc(n.title)}</h3>` : ''}${about ? `<p class="about-line">About ${esc(about.title)}</p>` : ''}${n.text ? `<p class="txt">${esc(n.text)}</p>` : ''}${strip(n)}</div>${pic}</a>`;
 }
 
 // "2 tbsp kosher salt" -> ["2 tbsp", "kosher salt"]; lines with no leading amount stay whole.

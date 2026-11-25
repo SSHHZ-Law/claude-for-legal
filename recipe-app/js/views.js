@@ -69,7 +69,7 @@ export async function detail(ctx, id) {
   const e = await data.entry(id, ctx.me.id);
   if (!e) return missing();
   const priv = !!e.private;
-  const verdicts = await data.verdicts({ entryId: id });
+  const [verdicts, myNotes] = await Promise.all([data.verdicts({ entryId: id }), data.notes(ctx.me.id, { aboutId: id })]);
   const K = KINDS[e.kind], mine = verdicts.find(v => v.by === ctx.me.id), owner = e.by === ctx.me.id;
   const author = ctx.person(e.by);
 
@@ -115,6 +115,10 @@ ${e.steps?.length ? `<section class="sheet" ${e.ingredients?.length ? '' : 'styl
 ${priv ? '' : `<h2 class="head">Verdicts ${verdicts.length ? `<small>${plural(verdicts.length, 'friend', 'friends')} ${K.have === 'been' ? (verdicts.length > 1 ? 'have been' : 'has been') : K.past}</small>` : ''}</h2>
 ${verdicts.length ? verdicts.map(v => verdictCard(v, ctx, { past: K.past, change: v.by === ctx.me.id })).join('')
     : `<p class="lede" style="margin-top:0">Nobody has weighed in yet. Ratings show up here under each friend’s name.</p>`}`}
+
+${e.trashedAt ? '' : `<h2 class="head">Your notes <small class="only">${icon('lock', 16, 2)}Only you see these</small></h2>
+${myNotes.length ? myNotes.map(n => noteCard(n)).join('') : `<p class="lede" style="margin:0 16px">Keep your own notes on this ${esc(K.one)}: what you changed, what to do next time.</p>`}
+<div class="row"><a class="btn small" href="#/note/new?about=${e.id}">Add a private note</a></div>`}
 
 ${owner && !e.trashedAt ? `<div class="owner"><a class="btn small" href="#/edit/${e.id}">Edit</a>${priv ? `<button class="btn small" data-action="delete-private" data-id="${e.id}">Delete</button>` : `<button class="btn small" data-action="trash" data-id="${e.id}">Move to trash</button>`}</div>` : ''}`;
   return { html, title: e.title };
@@ -275,25 +279,29 @@ export async function who(ctx) {
 // One person's own side of the app: private recipes and recs, and the notebook.
 export async function privatePage(ctx) {
   const [entries, notes] = await Promise.all([data.privateEntries(ctx.me.id), data.notes(ctx.me.id)]);
+  const about = {};
+  for (const id of new Set(notes.map(n => n.aboutId).filter(Boolean))) about[id] = await data.entry(id, ctx.me.id);
   const html = `${backBar()}<h1 class="title">Private</h1>
 <p class="lede only">${icon('lock', 18, 2)}<span>Only you see this page. Share anything with the group when it’s ready.</span></p>
 <div class="stack" style="margin-top:0"><div class="half"><a class="btn" href="#/add?private=1">${icon('plus', 20, 2.6)}Add privately</a><a class="btn" href="#/note/new">Write a note</a></div></div>
 <h2 class="head">Recipes and recs ${entries.length ? `<small>${entries.length}</small>` : ''}</h2>
 ${entries.length ? pair(entries, ctx) : `<p class="lede">Nothing yet. Add a recipe you’re still working on, or a place you want to try.</p>`}
 <h2 class="head">Notebook ${notes.length ? `<small>${plural(notes.length, 'note', 'notes')}</small>` : ''}</h2>
-${notes.length ? notes.map(noteCard).join('') : `<p class="lede">Log a cook, or jot down something to remember.</p>`}`;
+${notes.length ? notes.map(n => noteCard(n, about[n.aboutId])).join('') : `<p class="lede">Log a cook, or jot down something to remember.</p>`}`;
   return { html, title: 'Private', tab: 'you' };
 }
 export async function noteForm(ctx, id) {
   const isNew = id === 'new';
-  const n = isNew ? { date: today() } : await data.note(id, ctx.me.id);
+  const n = isNew ? { date: today(), aboutId: ctx.query.about || '' } : await data.note(id, ctx.me.id);
   if (!n) return missing('That note isn’t in your notebook.');
+  const about = n.aboutId ? await data.entry(n.aboutId, ctx.me.id) : null;
   const shared = n.sharedId ? await data.entry(n.sharedId, ctx.me.id) : null;
   const html = `${backBar('Cancel')}
 <h1 class="title" style="font-size:50px">${isNew ? 'New note' : 'Your note'}</h1>
-<p class="lede only">${icon('lock', 18, 2)}<span>Only you see this.</span></p>
+<p class="lede only">${icon('lock', 18, 2)}<span>Only you see this.${about ? ` It’s pinned to <a class="link" href="#/e/${about.id}">${esc(about.title)}</a>.` : ''}</span></p>
 <form data-form="note" ${isNew ? '' : `data-id="${n.id}"`} novalidate>
-  ${f('title', 'What is it?', n.title, { big: true, ph: 'Tri-tip for six, kettle vents, things to try' })}
+  ${about ? `<input type="hidden" name="aboutId" value="${about.id}">` : ''}
+  ${f('title', about ? 'Title' : 'What is it?', n.title, { big: true, hint: about ? 'Optional' : '', ph: about ? 'Second try, for Dad’s birthday' : 'Tri-tip for six, kettle vents, things to try' })}
   ${f('text', 'Notes', n.text, { area: true, ph: 'What you did, what happened, what to change next time.' })}
   ${f('date', 'When', n.date, { type: 'date' })}
   <p class="legend" style="margin:0 16px 10px"><span>The cook</span><i>Optional</i></p>
