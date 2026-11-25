@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Smoke Ring: design system</title>
+<link rel="stylesheet" href="../css/app.css">
+<style>
+/* specimen-page layout only; everything shown comes from css/app.css */
+body{padding-bottom:48px}
+.sw{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 16px}
+.sw div{font:600 12.5px/1.3 var(--sans)}
+.sw i{display:block;height:58px;border:2px solid var(--ink);margin-bottom:6px}
+.sw span{display:block;font-weight:400;color:var(--ink-2)}
+.spec{margin:0 16px;display:grid;gap:14px}
+.spec p small{display:block;font:400 13px/1.3 var(--sans);color:var(--ink-2);text-transform:none;margin-top:4px;letter-spacing:0}
+.bars{display:flex;align-items:flex-end;gap:10px;margin:0 16px}
+.bars div{font:600 12px/1 var(--sans);text-align:center}
+.bars i{display:block;background:var(--red);margin:0 auto 6px}
+.radii{display:flex;gap:16px;margin:0 16px;align-items:center;font:600 12.5px/1.3 var(--sans)}
+.radii i{display:block;width:64px;height:64px;border:2.5px solid var(--ink);margin-bottom:6px}
+.note{margin:6px 16px 0;font:400 14px/1.45 var(--sans);color:var(--ink-2)}
+.rowx{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:0 16px}
+.demo-tabs{position:static;transform:none;width:auto;margin-top:36px}
+</style></head>
+<body>
+<header class="top"><span class="mark"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="12.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="15" cy="15" r="6.5" fill="none" stroke="var(--red-ink)" stroke-width="4"/></svg>The Smoke Ring</span></header>
+<p class="lede" style="margin-bottom:0">Design system. Butcher paper, wood type, order tickets.</p>
+
+<h2 class="head">Colour</h2>
+<div class="sw">
+  <div><i style="background:var(--paper)"></i>Butcher paper<span>page</span></div>
+  <div><i style="background:var(--card)"></i>Deli paper<span>cards, fields</span></div>
+  <div><i style="background:var(--ink)"></i>Char<span>text, rules</span></div>
+  <div><i style="background:var(--red)"></i>Sauce<span>the one action</span></div>
+  <div><i style="background:var(--mustard)"></i>Mustard<span>on the board only</span></div>
+  <div><i style="background:var(--board)"></i>Board<span>menu board, tabs</span></div>
+</div>
+
+<h2 class="head">Type</h2>
+<div class="spec">
+  <p style="font:var(--t-mega);text-transform:uppercase">Chuck roast<small>Big Shoulders 900, 62/53. Entry titles.</small></p>
+  <p style="font:var(--t-xl);text-transform:uppercase">Santa Maria tri-tip<small>Big Shoulders 900, 50/45. Ticket titles, cities.</small></p>
+  <p style="font:var(--t-l);text-transform:uppercase">Ingredients<small>Big Shoulders 900, 34. Section heads.</small></p>
+  <p style="font:var(--t-m);text-transform:uppercase">Coffee-ancho rub<small>Big Shoulders 800, 26. Small cards, facts.</small></p>
+  <p style="font:var(--t-read)">Smoke fat side up until the bark sets and the middle reads 165°F.<small>Archivo 400, 17/25. Anything you read while cooking.</small></p>
+  <p style="font:var(--t-small);color:var(--ink-2)">Marcus put this up Sunday<small>Archivo 14. Who and when. Never smaller than 12.5.</small></p>
+</div>
+
+<h2 class="head">Space and shape</h2>
+<div class="bars">
+  <div><i style="width:4px;height:4px"></i>4</div><div><i style="width:8px;height:8px"></i>8</div><div><i style="width:12px;height:12px"></i>12</div><div><i style="width:16px;height:16px"></i>16</div><div><i style="width:24px;height:24px"></i>24</div><div><i style="width:32px;height:32px"></i>32</div><div><i style="width:48px;height:48px"></i>48</div>
+</div>
+<div class="radii" style="margin-top:18px">
+  <div><i></i>Paper: 0</div><div><i style="border-radius:4px"></i>Stamp: 4</div><div><i style="border-radius:999px"></i>People, scores</div>
+</div>
+<p class="note">Paper is cut square. Only stamps, scores and people are round. Every tap target is at least 48px.</p>
+
+<h2 class="head">Entry cards</h2>
+<a class="ticket" href="#">
+  <div class="cover shot"><img src="../assets/photos/chuck.svg" alt=""><span class="phototag">Photo: Marcus</span></div>
+  <div class="in"><span class="stamp">New recipe</span><h2>Smoked chuck roast</h2><p class="aka">The poor man’s brisket</p>
+  <p class="by"><span class="avatar s" style="--c:#8E2317">M</span><span><b>Marcus</b> put this up Sunday</span></p>
+  <p class="strip"><span>250°F</span><span>6–7 hr</span><span>Post oak</span></p></div>
+</a>
+<p class="note" style="margin:14px 16px">Ticket: the newest thing, and the first card on a list. Slip: everything else. With no photo, the title becomes a type poster in one of three colourways.</p>
+<div class="pair">
+  <a class="slip" href="#"><div class="cover shot"><img src="../assets/photos/sardines.svg" alt=""><span class="phototag">Photo: Lena</span></div><div class="in"><p class="k">Find</p><h3>Smoked sardines in olive oil</h3><p class="from">from Lena</p></div></a>
+  <a class="slip" href="#"><div class="cover poster"><span style="--fs:22cqw">Coffee-ancho rub</span></div><div class="in"><p class="k">Rub</p><h3>Coffee-ancho rub</h3><p class="from">from Teo</p></div></a>
+  <a class="slip" href="#"><div class="cover poster p1"><span style="--fs:22cqw">Grilled peaches</span></div><div class="in"><p class="k">Recipe</p><h3>Grilled peaches</h3><p class="from">from Priya</p></div></a>
+  <a class="slip" href="#"><div class="cover poster p2"><span style="--fs:27cqw">Mustard gold</span></div><div class="in"><p class="k">Sauce</p><h3>Mustard gold</h3><p class="from">from Marcus</p></div></a>
+</div>
+
+<h2 class="head">People</h2>
+<div class="rowx">
+  <span class="avatar l" style="--c:#8E2317">M</span><span class="avatar" style="--c:#9A6A00">P</span><span class="avatar" style="--c:#3F5E2A">D</span><span class="avatar" style="--c:#4C3A66">T</span><span class="avatar" style="--c:#1F5A63">L</span><span class="avatar" style="--c:#2B4A7A">J</span>
+</div>
+<div class="rowx" style="margin-top:8px"><a class="person" href="#"><span class="avatar s" style="--c:#9A6A00">P</span>Priya</a><a class="person" href="#"><span class="avatar s" style="--c:#3F5E2A">D</span>Dana</a></div>
+<p class="note">A person is a colour, an initial and a name. No levels, no totals of stars.</p>
+
+<h2 class="head">Rating and note</h2>
+<div class="rowx" style="margin-bottom:14px"><span class="score"><b>5</b><small>of 5</small></span><span class="score"><b>3</b><small>of 5</small></span><span class="stamp">Recipe</span><span class="stamp">New find</span></div>
+<div class="verdict"><p class="what"><b>Priya</b> made Marcus’s smoked chuck roast</p><span class="score" role="img" aria-label="5 out of 5"><b>5</b><small>of 5</small></span><q>Wrapped at 165 and it pulled like brisket. Making it again Sunday.</q><p class="when">Yesterday</p></div>
+<p class="note" style="margin-bottom:14px">A rating is always one friend’s stamp beside their name. Nothing is averaged.</p>
+<div class="block"><fieldset class="rate"><legend class="vh">Your rating</legend>
+  <label><input type="radio" name="r"><span>1</span></label><label><input type="radio" name="r"><span>2</span></label><label><input type="radio" name="r"><span>3</span></label><label><input type="radio" name="r" checked><span>4</span></label><label><input type="radio" name="r"><span>5</span></label></fieldset>
+  <p class="rate-word">Really good</p></div>
+
+<h2 class="head" style="margin-top:10px">Buttons</h2>
+<div class="stack" style="margin-top:0"><a class="btn pri" href="#">I made this</a><a class="btn" href="#">Copy as text</a></div>
+<div class="rowx" style="margin-top:14px"><a class="btn small" href="#">Restore</a><a class="ib" href="#" aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></a><a class="link" href="#">Change</a></div>
+<p class="note">One red button per screen. Everything else is outlined or underlined.</p>
+
+<h2 class="head">Form fields</h2>
+<label class="field big"><span>Name</span><input value="Smoked chuck roast"></label>
+<div class="seg"><label><input type="radio" name="t" checked><span>Rub</span></label><label><input type="radio" name="t"><span>Sauce</span></label></div>
+<div class="two"><label class="field"><span>Heat</span><input placeholder="250°F"></label><label class="field"><span>Wood</span><input placeholder="Post oak"></label></div>
+<label class="field"><span>Ingredients <i>One per line</i></span><textarea>2 tbsp kosher salt
+2 tbsp coarse black pepper</textarea></label>
+<label class="pick"><input type="file" accept="image/*">Add a photo<small>Take one or choose from your library</small></label>
+
+<h2 class="head">Pit card</h2>
+<dl class="pit" style="margin:0 16px"><div><dt>Cut</dt><dd>Chuck, 3–4 lb</dd></div><div><dt>Heat</dt><dd>250°F</dd></div><div><dt>Time</dt><dd>6–7 hr</dd></div><div><dt>Wood</dt><dd>Post oak</dd></div></dl>
+
+<section class="board"><h2>The board</h2>
+<a class="line" href="#"><b>Recipes</b><i></i><em>14</em><p>Newest: Marcus’s smoked chuck roast</p></a>
+<a class="line" href="#"><b>Finds</b><i></i><em>11</em><p>Things worth buying</p></a></section>
+<nav class="tabs demo-tabs" aria-label="Main">
+<a class="tab" aria-current="page" href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1z"/></svg>Home</a>
+<a class="tab" href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></svg>Search</a>
+<a class="tab add" href="#"><b><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></b>Add</a>
+<a class="tab" href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><circle cx="17" cy="8" r="2.6"/><path d="M16.5 13.2c2.6.2 4.2 1.8 4.7 4.8"/></svg>Friends</a>
+<a class="tab" href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.8 3.6-5.5 7-5.5s6.200 1.700 7 5.500"/></svg>You</a></nav>
+</body></html>

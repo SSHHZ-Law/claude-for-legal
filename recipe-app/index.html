@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Smoke Ring</title>
+<meta name="description" content="Recipes, rubs, methods, finds and restaurants, shared between friends.">
+<meta name="theme-color" content="#E9BC99" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17100D" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Smoke Ring">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="css/app.css">
+<!-- Applies a saved light/dark choice before first paint. The key is owned by js/data.js. -->
+<script>try{var t=localStorage.getItem('tsr.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<main id="view" tabindex="-1"></main>
+<nav class="tabs" id="tabs" aria-label="Main" hidden></nav>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<noscript><p style="padding:24px">The Smoke Ring needs JavaScript turned on.</p></noscript>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
