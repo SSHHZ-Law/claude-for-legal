@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Picnic: Home</title><link rel="stylesheet" href="../../fonts/fonts.css"><style>
+:root{--butter:#FFF0BF;--cream:#FFFBEC;--forest:#123B2A;--forest2:#476452;--tomato:#E5432B;--mustard:#F6B92B;--sky:#A8D3F2;--pink:#F6B4C1;
+--f:'Bricolage Grotesque',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--butter);color:var(--forest);font:400 16px/1.500 var(--f);font-stretch:100%;-webkit-font-smoothing:antialiased;padding-bottom:120px}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;object-fit:cover}
+.d1{font-weight:800;font-stretch:80%;letter-spacing:-.02em}
+.top{padding:22px 18px 4px;display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:start}
+.top h1{font:800 46px/.920 var(--f);font-stretch:78%;letter-spacing:-.025em}
+.top p{grid-column:1/-1;font-size:17px;line-height:1.350;color:var(--forest2);max-width:30ch}
+.top p b{color:var(--forest);font-weight:700}
+.avatar{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--forest);color:var(--butter);font:800 19px/1 var(--f);flex:none}
+.avatar.s{width:30px;height:30px;font-size:14px}
+.avatar.m{background:var(--tomato);color:#fff}.avatar.p{background:var(--mustard);color:var(--forest)}.avatar.d{background:#2F8F5B;color:#fff}.avatar.t{background:var(--pink);color:var(--forest)}.avatar.l{background:var(--sky);color:var(--forest)}
+
+/* the five places */
+.shelf{display:grid;grid-template-columns:1.150fr 1fr;grid-auto-rows:104px;gap:10px;padding:18px 14px 0}
+.tile{border-radius:26px;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;min-height:0}
+.tile h3{font:800 25px/.950 var(--f);font-stretch:80%;letter-spacing:-.015em}
+.tile b{font:800 15px/1 var(--f);display:flex;gap:6px;align-items:center}
+.tile .i{position:absolute;right:12px;bottom:10px;opacity:.9}
+.tile.recipes{grid-row:span 2;background:var(--tomato);color:#FFF6DA}
+.tile.recipes h3{font-size:36px}
+.tile.recipes img{position:absolute;width:168px;height:168px;border-radius:50%;right:-34px;bottom:-30px;border:5px solid #FFF6DA}
+.tile.rubs{background:var(--mustard)}
+.tile.methods{background:var(--forest);color:var(--butter)}
+.tile.finds{background:var(--sky)}
+.tile.places{background:var(--pink)}
+.tile.places p{font-size:13px;line-height:1.250;max-width:17ch}
+
+.head{font:800 30px/1 var(--f);font-stretch:80%;letter-spacing:-.02em;margin:34px 18px 14px}
+
+.post{display:block;margin:0 14px 14px;background:var(--cream);border-radius:30px;overflow:hidden}
+.post .pic{position:relative}
+.post img{aspect-ratio:4/3.300}
+.pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:15px;font:700 14px/1 var(--f)}
+.pill.recipe{background:var(--tomato);color:#FFF6DA}.pill.find{background:var(--sky)}.pill.rub{background:var(--mustard)}.pill.method{background:var(--forest);color:var(--butter)}.pill.place{background:var(--pink)}
+.post .pic .pill{position:absolute;left:14px;top:14px}
+.post .in{padding:16px 18px 18px}
+.post h3{font:800 30px/.980 var(--f);font-stretch:80%;letter-spacing:-.02em}
+.post .aka{font-size:16px;color:var(--forest2);margin-top:4px}
+.who{display:flex;gap:9px;align-items:center;margin-top:14px;font-size:15px;line-height:1.300}
+.who b{font-weight:700}
+.made{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:2px dashed #e6dcb6;font-size:14px;color:var(--forest2)}
+.made .avatar{margin-right:-14px;border:2.500px solid var(--cream);width:32px;height:32px}
+.made .avatar + span{margin-left:12px}
+/* no photo: the label is the picture */
+.label{background:var(--mustard);border-radius:30px;margin:0 14px 14px;padding:18px;display:block;position:relative;overflow:hidden;min-height:210px}
+.label .big{font:800 58px/.860 var(--f);font-stretch:76%;letter-spacing:-.03em;margin-top:16px;max-width:7ch}
+.label .who{margin-top:18px;position:relative;z-index:1}
+.label .jar{position:absolute;right:-30px;top:-22px;color:var(--forest);opacity:.16}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 14px}
+.mini{background:var(--cream);border-radius:26px;overflow:hidden;display:block}
+.mini img{aspect-ratio:1/.900}
+.mini .in{padding:12px 14px 16px}
+.mini h4{font:800 21px/1 var(--f);font-stretch:80%;letter-spacing:-.01em;margin-top:9px}
+.mini .from{font-size:13.500px;color:var(--forest2);margin-top:5px}
+.mini .pill{height:26px;font-size:12.500px;padding:0 10px}
+
+.say{display:grid;grid-template-columns:46px 1fr;gap:10px;margin:0 14px 12px;align-items:start}
+.bubble{background:var(--cream);border-radius:6px 24px 24px 24px;padding:13px 16px 14px}
+.bubble .what{font-size:15px;line-height:1.300}
+.bubble .what b{font-weight:700}
+.bubble q{display:block;font:600 18px/1.320 var(--f);quotes:"“" "”";margin-top:8px}
+.bubble .meta{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:13px;color:var(--forest2)}
+.stars{display:inline-flex;gap:1px}
+.stars .on{fill:var(--tomato)}.stars .off{fill:#e4d9ae}
+
+.dock{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:2px;background:var(--forest);border-radius:36px;padding:7px 8px}
+.dock a{display:grid;place-items:center;width:54px;height:54px;border-radius:50%;color:#cfe0c8}
+.dock a.on{color:var(--butter);background:#245540}
+.dock a.add{width:auto;padding:0 20px 0 14px;display:flex;gap:6px;background:var(--tomato);color:#fff;font:800 18px/1 var(--f);height:58px;border-radius:29px;margin:0 4px}
+
+/* detail */
+.cap{background:var(--tomato);color:#FFF6DA;padding:12px 18px 150px}
+.cap nav{display:flex;justify-content:space-between;margin:0 -8px 14px}
+.ib{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#c93521;color:#FFF6DA}
+.cap .pill{background:#FFF6DA;color:var(--tomato)}
+.cap h1{font:800 54px/.880 var(--f);font-stretch:76%;letter-spacing:-.03em;margin-top:14px}
+.cap .aka{font-size:19px;margin-top:8px;opacity:.92}
+.heroimg{margin:-130px 14px 0;border-radius:30px;overflow:hidden;border:5px solid var(--butter)}
+.heroimg img{aspect-ratio:4/3.600}
+.body{padding:0 18px}
+.body .who{margin-top:18px;font-size:16px}
+.headnote{font:600 21px/1.320 var(--f);margin-top:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px 0 11px;border-radius:20px;background:var(--cream);font:600 15px/1 var(--f)}
+.chip svg{color:var(--tomato)}
+.body h2{font:800 32px/1 var(--f);font-stretch:80%;letter-spacing:-.02em;margin-top:38px;display:flex;justify-content:space-between;align-items:baseline}
+.body h2 small{font:500 15px/1 var(--f);font-stretch:100%;letter-spacing:0;color:var(--forest2)}
+.ing{list-style:none;margin-top:14px;background:var(--cream);border-radius:26px;padding:6px 16px}
+.ing li{display:grid;grid-template-columns:30px 1fr auto;gap:12px;align-items:center;min-height:52px;border-bottom:2px dashed #ece2bd;font-size:17px}
+.ing li:last-child{border-bottom:0}
+.ing .box{width:28px;height:28px;border-radius:50%;border:2.500px solid var(--forest);display:grid;place-items:center}
+.ing li.done .box{background:var(--forest);color:var(--butter)}
+.ing li.done span:nth-child(2){text-decoration:line-through;color:var(--forest2)}
+.ing b{font-weight:700}
+.steps{list-style:none;counter-reset:s;margin-top:14px}
+.steps li{counter-increment:s;background:var(--cream);border-radius:26px;padding:16px 18px 18px 64px;position:relative;font-size:17px;line-height:1.450;margin-bottom:10px}
+.steps li::before{content:counter(s);position:absolute;left:14px;top:14px;width:38px;height:38px;border-radius:50%;background:var(--tomato);color:#fff;font:800 20px/38px var(--f);text-align:center}
+.body .say{margin:14px 0 0}
+.stick{position:fixed;left:14px;right:14px;bottom:18px;display:grid;grid-template-columns:1fr 60px 60px;gap:8px}
+.stick a{height:60px;border-radius:30px;display:flex;align-items:center;justify-content:center;gap:8px;font:800 19px/1 var(--f)}
+.stick .pri{background:var(--tomato);color:#fff}
+.stick .sec{background:var(--forest);color:var(--butter)}
+</style></head>
+<body>
+<header class="top"><h1>Hey, John</h1><a class="avatar" href="#" aria-label="Your profile">J</a>
+<p><b>Marcus</b> smoked a chuck roast. <b>Lena</b> found sardines worth hoarding.</p></header>
+
+<nav class="shelf" aria-label="Places">
+  <a class="tile recipes" href="#"><h3>Recipes</h3><b>14</b><img src="../../standins/thighs.svg" alt=""></a>
+  <a class="tile rubs" href="#"><h3>Rubs &amp; sauces</h3><b>9</b><svg class="i" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.500" y="8" width="11" height="13" rx="3"/><rect x="8" y="4" width="8" height="4" rx="1"/><path d="M9.500 13h5"/></svg></a>
+  <a class="tile methods" href="#"><h3>Methods</h3><b>7</b><svg class="i" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21c-3.600 0-6-2.500-6-5.800 0-2.300 1.200-3.900 2.500-5.400.3 1.300.9 2.100 1.900 2.600-.3-3.300.9-6.300 3.100-8.400.5 3.400 4.500 5.700 4.500 10.900 0 3.500-2.400 6.100-6 6.100z"/></svg></a>
+  <a class="tile finds" href="#"><h3>Finds</h3><b>11</b><svg class="i" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.500" width="18" height="10" rx="5"/><path d="M7 12.500c2-2.300 5-2.300 7.500 0-2.500 2.300-5.500 2.300-7.500 0zM14.500 12.500l2.500-2v4z"/></svg></a>
+  <a class="tile places" href="#"><h3>Restaurants</h3><b>16 in 5 cities</b><svg class="i" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.500-6-6.500-11a6.500 6.500 0 0 1 13 0c0 5-6.500 11-6.500 11z"/><circle cx="12" cy="10" r="2.300"/></svg></a>
+</nav>
+
+<h2 class="head">New from friends</h2>
+<a class="post" href="detail.html">
+  <div class="pic"><img src="../../standins/chuck.svg" alt=""><span class="pill recipe">Recipe</span></div>
+  <div class="in"><h3>Smoked chuck roast</h3><p class="aka">The poor man’s brisket</p>
+  <p class="who"><span class="avatar s m">M</span><span><b>Marcus</b> added this on Sunday</span></p>
+  <p class="made"><span class="avatar s p">P</span><span class="avatar s d">D</span><span>Priya and Dana made it</span></p></div>
+</a>
+<a class="label" href="#">
+  <span class="pill method" style="background:var(--forest);color:var(--butter)">Rub</span>
+  <p class="big">Coffee-ancho rub</p>
+  <p class="who"><span class="avatar s t">T</span><span><b>Teo</b> added this on Monday</span></p>
+  <span class="jar"><svg class="i" width="190" height="190" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.500" y="8" width="11" height="13" rx="3"/><rect x="8" y="4" width="8" height="4" rx="1"/><path d="M9.500 13h5"/></svg></span>
+</a>
+<div class="duo">
+  <a class="mini" href="#"><img src="../../standins/sardines.svg" alt=""><div class="in"><span class="pill find">Find</span><h4>Smoked sardines in olive oil</h4><p class="from">from Lena</p></div></a>
+  <a class="mini" href="#"><img src="../../standins/restaurant.svg" alt=""><div class="in"><span class="pill place">Austin</span><h4>Okra &amp; Ash</h4><p class="from">from Dana</p></div></a>
+</div>
+
+<h2 class="head">What friends said</h2>
+<div class="say"><span class="avatar p">P</span><div class="bubble"><p class="what"><b>Priya</b> made Marcus’s smoked chuck roast</p><q>Wrapped at 165 and it pulled like brisket. Making it again Sunday.</q><p class="meta"><span class="stars" role="img" aria-label="5 out of 5"><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg></span><span>Yesterday</span></p></div></div>
+<div class="say"><span class="avatar t">T</span><div class="bubble"><p class="what"><b>Teo</b> went to Okra &amp; Ash</p><q>Get the beef rib. Skip the sides.</q><p class="meta"><span class="stars" role="img" aria-label="4 out of 5"><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="off"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg></span><span>Monday</span></p></div></div>
+<div class="say"><span class="avatar l">L</span><div class="bubble"><p class="what"><b>Lena</b> tried Dana’s Alabama white sauce</p><q>Halved the horseradish. It still bites.</q><p class="meta"><span class="stars" role="img" aria-label="4 out of 5"><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="on"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg><svg width="18" height="18" viewBox="0 0 24 24" class="off"><path d="M12 3.200l2.700 5.600 6.100.8-4.500 4.300 1.100 6.100L12 17.100 6.600 20l1.100-6.100L3.200 9.600l6.100-.8z"/></svg></span><span>Sunday</span></p></div></div>
+<nav class="dock" aria-label="Main">
+<a class="on" href="home.html" aria-label="Home"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1z"/></svg></a>
+<a href="#" aria-label="Search"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></svg></a>
+<a class="add" href="#"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add</a>
+<a href="#" aria-label="Friends"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3.200 3-5 6-5s5.400 1.800 6 5"/><circle cx="17" cy="8" r="2.600"/><path d="M16.500 13.200c2.600.2 4.200 1.800 4.700 4.800"/></svg></a>
+<a href="#" aria-label="You"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.500" r="3.500"/><path d="M5 20c.8-3.800 3.600-5.500 7-5.500s6.200 1.700 7 5.500"/></svg></a></nav></body></html>
