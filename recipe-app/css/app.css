@@ -130,6 +130,23 @@ main.bare{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .verdict .score{grid-row:1/4;grid-column:2;align-self:start}
 .verdict .mine{font-weight:700;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:var(--s2) 0}
 
+/* comments: collapsed to one row until opened, so the page stays quiet */
+.verdict.cm{grid-template-columns:1fr;border-left-color:var(--dots)}
+.talk{margin:var(--s3) var(--s4) 0;background:var(--card)}
+.talk summary{display:flex;align-items:center;gap:var(--s3);min-height:60px;padding:0 var(--s4);cursor:pointer;list-style:none;font:800 26px/1 var(--wood);text-transform:uppercase}
+.talk summary::-webkit-details-marker{display:none}
+.talk summary small{font:500 14px/1 var(--sans);text-transform:none;color:var(--ink-2);margin-left:auto}
+.talk summary .i{transform:rotate(90deg)}
+.talk[open] summary .i{transform:rotate(-90deg)}
+.talk .inside{padding:0 var(--s4) var(--s4);border-top:2px solid var(--ink)}
+.cmt{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.cmt p{font-size:15px;line-height:1.35}
+.cmt .when{font-size:13px;color:var(--ink-2);margin-left:4px}
+.cmt .txt{font:var(--t-body);margin-top:3px;white-space:pre-line}
+.cmt .mine{font:700 13px/1 var(--sans);text-decoration:underline;text-underline-offset:3px;color:var(--ink-2);min-height:32px;margin-top:2px}
+.talk .field{margin:14px 0 10px}
+.talk textarea{min-height:84px}
+
 /* private note: same paper, char edge instead of sauce, never shown to anyone else */
 .pnote{display:block;background:var(--card);margin:0 var(--s4) 10px;padding:14px;border-left:5px solid var(--ink)}
 .pnote.has{display:grid;grid-template-columns:1fr 84px;gap:var(--s3);align-items:start}

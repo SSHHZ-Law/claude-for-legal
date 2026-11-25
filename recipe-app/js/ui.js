@@ -140,6 +140,13 @@ export function verdictCard(v, ctx, { entry, past = 'made it', change = false } 
   <p class="when">${cap(day(v.at))}${change ? ` <a class="mine" href="#/made/${v.entryId}">Change yours</a>` : ''}</p></div>`;
 }
 
+// A comment: someone's name and what they said. No rating.
+export const commentRow = (c, ctx) => `<div class="cmt"><a href="#/p/${c.by}">${avatar(ctx.person(c.by), 's')}</a><div>
+  <p><a href="#/p/${c.by}"><b>${esc(ctx.name(c.by))}</b></a> <span class="when">${esc(day(c.at))}</span></p><p class="txt">${esc(c.text)}</p>
+  ${c.by === ctx.me.id ? `<button class="mine" type="button" data-action="delete-comment" data-id="${c.id}">Delete</button>` : ''}</div></div>`;
+// The same comment on Home, where it needs to say what it is about.
+export const commentCard = (c, ctx, entry) => `<div class="verdict cm"><p class="what"><a href="#/p/${c.by}"><b>${esc(ctx.name(c.by))}</b></a> commented on <a class="link" href="#/e/${entry.id}">${esc(entry.title)}</a></p><q>${esc(c.text)}</q><p class="when">${cap(day(c.at))}</p></div>`;
+
 // A private notebook page. Only ever rendered for the person who wrote it.
 export const noteDay = ymd => { const [y, m, d] = String(ymd).split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
 export const today = () => { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };

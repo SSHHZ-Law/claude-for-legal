@@ -17,9 +17,10 @@ const go = (to, replace) => replace ? location.replace('#' + to) : (location.has
 async function context() {
   const [people, me] = await Promise.all([data.people(), data.me()]);
   const byId = Object.fromEntries(people.map(p => [p.id, p]));
-  return { people, me, person: id => byId[id], name: id => byId[id]?.name || '' };
+  return { people, me, person: id => byId[id], name: id => byId[id]?.name || '', open };
 }
 let ctx;
+const open = new Set();          // entries whose comments are expanded, so they stay open across re-renders
 
 // ---- scroll memory, so Back returns you to where you were in a list
 const trail = [], scrolls = new Map();
@@ -30,6 +31,7 @@ async function render() {
   const full = path(), [p, qs = ''] = full.split('?');
   ctx.query = Object.fromEntries(new URLSearchParams(qs));
   if (!ctx.me && p !== '/who') return go('/who', true);
+  const samePage = shown === full, here = scrollY;   // re-drawing the page you are on keeps your place
   if (shown !== null) scrolls.set(shown, scrollY);
   const goingBack = trail.length > 1 && trail[trail.length - 2] === full;
   goingBack ? trail.pop() : (trail[trail.length - 1] !== full && trail.push(full));
@@ -45,7 +47,7 @@ async function render() {
       ? `<a class="tab add" href="#${to}" ${out.tab === id ? 'aria-current="page"' : ''}><b>${icon(ic, 32, 2.6)}</b>${label}</a>`
       : `<a class="tab" href="#${to}" ${out.tab === id ? 'aria-current="page"' : ''}>${icon(ic)}${label}</a>`).join('');
   shown = full;
-  scrollTo(0, goingBack ? (scrolls.get(full) || 0) : 0);
+  scrollTo(0, samePage ? here : goingBack ? (scrolls.get(full) || 0) : 0);
   view.focus({ preventScroll: true });
 }
 
@@ -93,6 +95,12 @@ const actions = {
     go('/private', true);
     toast('Deleted', async () => { await data.saveEntry(gone); toast('Restored'); render(); });
   },
+  async 'delete-comment'(el) {
+    const gone = await data.deleteComment(el.dataset.id, ctx.me.id);
+    if (!gone) return;
+    await render();
+    toast('Comment deleted', async () => { await data.saveComment(gone); toast('Comment restored'); render(); });
+  },
   async 'delete-note'(el) {
     const gone = await data.deleteNote(el.dataset.id, ctx.me.id);
     if (!gone) return;
@@ -109,6 +117,12 @@ document.addEventListener('click', ev => {
   const el = ev.target.closest('[data-action]');
   if (el && actions[el.dataset.action]) { ev.preventDefault(); actions[el.dataset.action](el); }
 });
+
+// remember which comment threads are open (toggle does not bubble, so listen on the way down)
+document.addEventListener('toggle', ev => {
+  const d = ev.target;
+  if (d.matches?.('details.talk')) d.open ? open.add(d.dataset.entry) : open.delete(d.dataset.entry);
+}, true);
 
 // ---- inputs that react as you go
 document.addEventListener('change', async ev => {
@@ -160,6 +174,14 @@ document.addEventListener('submit', async ev => {
       go('/e/' + saved.id, true);
       toast(saved.private ? `${cap(KINDS[kind].one)} saved, just for you` : (fromNote || wasPrivate) ? 'Shared with the group' : `${cap(KINDS[kind].one)} saved`);
     } catch { button.disabled = false; toast('That didn’t save. Try again, or try a smaller photo.'); }
+  }
+
+  if (form.dataset.form === 'comment') {
+    if (!get('text')) { form.querySelector('[name=text]').focus(); return toast('Write a comment first.'); }
+    await data.saveComment({ entryId: form.dataset.id, by: ctx.me.id, text: get('text') });
+    open.add(form.dataset.id);
+    await render();
+    toast('Comment posted');
   }
 
   if (form.dataset.form === 'note') {

@@ -32,6 +32,8 @@ keeps working offline (`sw.js` is network-first with a cache fallback, and only 
 | `js/views.js` | Every screen |
 | `js/app.js` | Routing, taps, forms |
 | `manifest.webmanifest`, `sw.js`, `assets/icons/` | Install-to-home-screen and offline |
+| `tests/` | Browser tests and a screenshot script (`node tests/run.cjs`) |
+| `BRIEF.md`, `CLAUDE.md` | The owner's brief, and the working notes for continuing the project |
 | `design/` | The three direction mocks from step 1 and `system.html`, the design-system page |
 
 ## Data, now and later

@@ -14,6 +14,7 @@
 //   entry   { id, kind: recipe|sauce|method|find|place, title, by, at, note, photos: [{ src, by, credit }],
 //             ...fields for its kind, private, trashedAt, trashedBy }
 //   verdict { id, entryId, by, rating: 1-5, note, at }   one per person per entry
+//   comment { id, entryId, by, text, at }                    public, by name, no rating; any number per person
 //   note    { id, by, date: 'YYYY-MM-DD', title, text, cut, heat, time, wood, photo: { src, by }, aboutId, sharedId, at }
 //           aboutId pins a private note to one entry; sharedId records the entry a note was shared as
 //
@@ -145,6 +146,28 @@ export const data = {
     else d.marks.push(m = { id: uid('k'), entryId, by, rating, note, at: nowIso() });
     write();
     return copy(m);
+  },
+
+  // ---- comments: public, by name, no rating ----
+  // For one entry they come back oldest first, like a conversation. Without `entryId`, newest first across live entries.
+  async comments({ entryId, limit } = {}) {
+    const d = read();
+    const live = new Set(d.entries.filter(e => !e.trashedAt && !e.private).map(e => e.id));
+    let list = (d.comments || []).filter(c => (entryId ? c.entryId === entryId : live.has(c.entryId))).sort(newest);
+    if (entryId) list.reverse();
+    if (limit) list = list.slice(0, limit);
+    return copy(list);
+  },
+  async saveComment(c) {
+    const d = read(); d.comments ||= [];
+    const row = { ...c, id: c.id || uid('c'), at: c.at || nowIso() };
+    d.comments.push(row); write(); return copy(row);
+  },
+  // Only the person who wrote a comment can delete it. Returns the comment so the app can offer Undo.
+  async deleteComment(id, byId) {
+    const d = read(), i = (d.comments || []).findIndex(c => c.id === id && c.by === byId);
+    if (i < 0) return null;
+    const [gone] = d.comments.splice(i, 1); write(); return copy(gone);
   },
 
   // ---- private notebook ----

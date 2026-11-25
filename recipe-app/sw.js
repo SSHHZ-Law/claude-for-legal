@@ -1,6 +1,6 @@
 // Offline support. Network first, so a new deploy shows up on the next open;
 // the cache is only the fallback when there is no signal at the grill.
-const CACHE = 'smoke-ring-v4';
+const CACHE = 'smoke-ring-v5';
 const SHELL = ['./', 'index.html', 'css/app.css', 'js/app.js', 'js/data.js', 'js/seed.js', 'js/ui.js', 'js/views.js', 'manifest.webmanifest',
   'assets/fonts/bigshoulders-normal.woff2', 'assets/fonts/archivo-normal.woff2', 'assets/fonts/archivo-italic.woff2',
   'assets/icons/icon-192.png', 'assets/icons/icon-512.png'];

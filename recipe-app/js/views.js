@@ -2,7 +2,7 @@
 // and returns { html, title, tab, bare }. `bare` screens hide the tab bar (forms, the name picker).
 import { data } from './data.js';
 import { esc, cap, plural, list as listNames, icon, ring, day, onDay, avatar, cover, poster, photoTag, strip, ticket, slip,
-  verdictCard, splitQty, KINDS, KIND_ORDER, kindByPath, kindWord, noteCard, today, from } from './ui.js';
+  verdictCard, splitQty, KINDS, KIND_ORDER, kindByPath, kindWord, noteCard, today, from, commentRow, commentCard } from './ui.js';
 
 const backBar = (label = 'Back', right = '') => `<header class="bar"><button class="ib" data-action="back" aria-label="${label}">${icon('back')}</button><div>${right}</div></header>`;
 const pair = (entries, ctx, label) => entries.length ? `<div class="pair">${entries.map(e => slip(e, ctx, { label: label?.(e) })).join('')}</div>` : '';
@@ -10,7 +10,9 @@ const empty = (title, text, href, cta) => `<div class="empty"><b>${title}</b>${t
 
 // ---------------------------------------------------------------- home
 export async function home(ctx) {
-  const [all, verdicts] = await Promise.all([data.entries(), data.verdicts()]);
+  const [all, verdicts, comments] = await Promise.all([data.entries(), data.verdicts(), data.comments({ limit: 5 })]);
+  // What friends have been saying lately: ratings and comments together, newest first.
+  const lately = [...verdicts.slice(0, 5).map(v => ({ ...v, rated: true })), ...comments].sort((a, b) => (a.at < b.at ? 1 : -1)).slice(0, 5);
   const byId = Object.fromEntries(all.map(e => [e.id, e]));
   const [first, ...rest] = all;
   const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString();
@@ -31,7 +33,7 @@ export async function home(ctx) {
 ${first ? ticket(first, ctx, { stamp: 'New ' + kindWord(first).toLowerCase(), verdicts }) : empty('Nothing here yet', 'Add the first recipe, rub, method, find or restaurant.', '#/add', 'Add something')}
 ${rest.length ? `<h2 class="head">Also fresh ${fresh > 4 ? `<small>${fresh} more this week</small>` : ''}</h2>${pair(rest.slice(0, 4), ctx)}` : ''}
 <nav class="board" aria-label="Kinds"><h2>The board</h2>${lines}</nav>
-${verdicts.length ? `<h2 class="head">Verdicts</h2>${verdicts.slice(0, 4).map(v => verdictCard(v, ctx, { entry: byId[v.entryId] })).join('')}` : ''}`;
+${lately.length ? `<h2 class="head">Lately</h2>${lately.map(x => x.rated ? verdictCard(x, ctx, { entry: byId[x.entryId] }) : commentCard(x, ctx, byId[x.entryId])).join('')}` : ''}`;
   return { html, title: 'The Smoke Ring', tab: 'home' };
 }
 
@@ -69,7 +71,7 @@ export async function detail(ctx, id) {
   const e = await data.entry(id, ctx.me.id);
   if (!e) return missing();
   const priv = !!e.private;
-  const [verdicts, myNotes] = await Promise.all([data.verdicts({ entryId: id }), data.notes(ctx.me.id, { aboutId: id })]);
+  const [verdicts, myNotes, comments] = await Promise.all([data.verdicts({ entryId: id }), data.notes(ctx.me.id, { aboutId: id }), data.comments({ entryId: id })]);
   const K = KINDS[e.kind], mine = verdicts.find(v => v.by === ctx.me.id), owner = e.by === ctx.me.id;
   const author = ctx.person(e.by);
 
@@ -115,6 +117,13 @@ ${e.steps?.length ? `<section class="sheet" ${e.ingredients?.length ? '' : 'styl
 ${priv ? '' : `<h2 class="head">Verdicts ${verdicts.length ? `<small>${plural(verdicts.length, 'friend', 'friends')} ${K.have === 'been' ? (verdicts.length > 1 ? 'have been' : 'has been') : K.past}</small>` : ''}</h2>
 ${verdicts.length ? verdicts.map(v => verdictCard(v, ctx, { past: K.past, change: v.by === ctx.me.id })).join('')
     : `<p class="lede" style="margin-top:0">Nobody has weighed in yet. Ratings show up here under each friend’s name.</p>`}`}
+
+${priv || e.trashedAt ? '' : `<details class="talk" data-entry="${e.id}" ${ctx.open.has(e.id) ? 'open' : ''}>
+  <summary><span>Comments</span><small>${comments.length ? plural(comments.length, 'comment', 'comments') : 'Ask or add one'}</small>${icon('go', 22, 2.4)}</summary>
+  <div class="inside">${comments.map(c => commentRow(c, ctx)).join('')}
+  <form data-form="comment" data-id="${e.id}" novalidate>
+    <label class="field"><span>Add a comment <i>Posts as ${esc(ctx.me.name)}</i></span><textarea name="text" placeholder="Ask a question or leave a tip. No rating needed."></textarea></label>
+    <button class="btn small" type="submit">Post comment</button></form></div></details>`}
 
 ${e.trashedAt ? '' : `<h2 class="head">Your notes <small class="only">${icon('lock', 16, 2)}Only you see these</small></h2>
 ${myNotes.length ? myNotes.map(n => noteCard(n)).join('') : `<p class="lede" style="margin:0 16px">Keep your own notes on this ${esc(K.one)}: what you changed, what to do next time.</p>`}

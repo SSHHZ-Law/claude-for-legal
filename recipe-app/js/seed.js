@@ -168,6 +168,15 @@ export function seed(nowMs) {
     mark('r-thighs', 'john', 4, 'Dunking is the move. I used pecan instead of cherry.', 7),
     mark('f-paper', 'dana', 5, 'Finally stopped using foil.', 9),
   ];
+  const say = (entryId, by, text, d) => ({ id: `c-${entryId}-${by}-${String(d).replace('.', '')}`, entryId, by, text, at: ago(d) });
+  const comments = [
+    say('r-chuck', 'lena', 'I don’t have butcher paper. Will foil work for the wrap?', 1.2),
+    say('r-chuck', 'marcus', 'Foil works. The bark goes softer, so unwrap it for the last 30 minutes.', 1.0),
+    say('p-okra', 'priya', 'Do they take cards?', 3.2),
+    say('p-okra', 'dana', 'Cards are fine. The tip jar is cash.', 3.0),
+    say('m-butt', 'teo', 'What do you do about the fire overnight? Mine dies around 3.', 10),
+  ];
+
   // ---- private notebooks. Each person only ever sees their own.
   const notes = [
     { id: 'n-john-1', by: 'john', date: dayAgo(2), at: ago(2), aboutId: 'r-tritip', title: 'Tri-tip for six', cut: 'Tri-tip, 2.6 lb', heat: '225°F, then direct', time: '70 min', wood: 'Red oak',
@@ -179,5 +188,5 @@ export function seed(nowMs) {
     { id: 'n-marcus-1', by: 'marcus', date: dayAgo(6), at: ago(6), title: 'Brisket, second try this month', cut: 'Packer, 13 lb', heat: '250°F', time: '13 hr', wood: 'Post oak',
       text: 'Flat came out dry again. Wrap earlier, at 160, and rest longer.' },
   ];
-  return { people, entries, marks, notes };
+  return { people, entries, marks, comments, notes };
 }
