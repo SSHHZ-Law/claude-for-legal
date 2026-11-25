@@ -33,6 +33,7 @@ const P = {
   log: '<ellipse cx="6.5" cy="12" rx="2.5" ry="4.5"/><path d="M6.5 7.5h10c1.700 0 3 2 3 4.500s-1.300 4.500-3 4.500h-10"/><path d="M11 10.500h4M12 13.500h3"/>',
   camera: '<path d="M4 8.500a2 2 0 0 1 2-2h1.500l1.500-2h6l1.500 2H18a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.500" r="3.500"/>',
   trash: '<path d="M4 7h16M9 7V4.500h6V7M6.500 7l1 12.500h9l1-12.500"/>',
+  lock: '<rect x="5.5" y="10.5" width="13" height="9.5" rx="1.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.700 0l3-3a4 4 0 0 0-5.700-5.700l-1 1"/><path d="M14 10a4 4 0 0 0-5.700 0l-3 3a4 4 0 0 0 5.700 5.700l1-1"/>',
 };
 export const icon = (n, size = 24, sw = 1.8) =>
@@ -126,6 +127,15 @@ export function verdictCard(v, ctx, { entry, past = 'made it', change = false } 
     : `${who} ${past}`;
   return `<div class="verdict"><p class="what">${what}</p>${score(v.rating)}${v.note ? `<q>${esc(v.note)}</q>` : ''}
   <p class="when">${cap(day(v.at))}${change ? ` <a class="mine" href="#/made/${v.entryId}">Change yours</a>` : ''}</p></div>`;
+}
+
+// A private notebook page. Only ever rendered for the person who wrote it.
+export const noteDay = ymd => { const [y, m, d] = String(ymd).split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
+export const today = () => { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
+export function noteCard(n) {
+  const pic = n.photo ? `<img src="${esc(data.photoUrl(n.photo.src))}" alt="" loading="lazy">` : '';
+  return `<a class="pnote${pic ? ' has' : ''}" href="#/note/${n.id}"><div><p class="k">${esc(noteDay(n.date))}${n.sharedId ? ', shared with the group' : ''}</p>
+  ${n.title ? `<h3>${esc(n.title)}</h3>` : ''}${n.text ? `<p class="txt">${esc(n.text)}</p>` : ''}${strip(n)}</div>${pic}</a>`;
 }
 
 // "2 tbsp kosher salt" -> ["2 tbsp", "kosher salt"]; lines with no leading amount stay whole.

@@ -43,6 +43,11 @@ Sheet: every function is already async and returns plain JSON-shaped objects. Ph
 need somewhere to live at that point (for example a Drive folder the script writes to);
 `addPhoto()` is the single place that changes.
 
+Each person also has a private notebook (`#/notebook`). Notes are only returned to the person who
+wrote them and never appear in lists, search or the trash. Before syncing to a Sheet, decide
+whether notes sync at all: the Sheet's owner can read every row, and without a PIN anyone holding
+the phone can switch names.
+
 Identity is "pick your name", remembered on the device. A PIN and group passcode are not built.
 
 To wipe a phone back to the sample data, clear the site's storage in the browser settings.

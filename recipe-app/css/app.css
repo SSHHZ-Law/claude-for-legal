@@ -129,6 +129,21 @@ main.bare{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .verdict .score{grid-row:1/4;grid-column:2;align-self:start}
 .verdict .mine{font-weight:700;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:var(--s2) 0}
 
+/* private note: same paper, char edge instead of sauce, never shown to anyone else */
+.pnote{display:block;background:var(--card);margin:0 var(--s4) 10px;padding:14px;border-left:5px solid var(--ink)}
+.pnote.has{display:grid;grid-template-columns:1fr 84px;gap:var(--s3);align-items:start}
+.pnote img{width:84px;aspect-ratio:1}
+.pnote .k{color:var(--ink-2)}
+.pnote h3{font:var(--t-m);text-transform:uppercase;margin-top:5px;overflow-wrap:anywhere}
+.pnote .txt{font:var(--t-body);margin-top:6px;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.pnote .strip{margin-top:10px;padding-top:var(--s2);gap:4px 14px}
+.pnote .strip span{font-size:19px}
+.only{display:flex;align-items:center;gap:6px}
+.lede.only{align-items:flex-start}
+.lede.only svg{margin-top:1px}
+.row{display:flex;align-items:center;gap:var(--s4);margin:var(--s3) var(--s4) 0}
+.field input[type=date]{min-height:54px}
+
 /* ---------- buttons ---------- */
 .btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);min-height:58px;width:100%;padding:0 var(--s4);font:900 26px/1 var(--wood);text-transform:uppercase;letter-spacing:.02em;border:2.5px solid var(--ink);color:var(--ink);background:transparent;text-align:center}
 .btn.pri{background:var(--red);border-color:var(--red);color:var(--on-red)}

@@ -4,6 +4,7 @@ const P = 'assets/photos/';
 
 export function seed(nowMs) {
   const ago = d => new Date(nowMs - d * 864e5).toISOString();
+  const dayAgo = d => { const t = new Date(nowMs - d * 864e5); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
   const ph = (file, by) => [{ src: P + file, by }];
 
   const people = [
@@ -155,5 +156,16 @@ export function seed(nowMs) {
     mark('r-thighs', 'john', 4, 'Dunking is the move. I used pecan instead of cherry.', 7),
     mark('f-paper', 'dana', 5, 'Finally stopped using foil.', 9),
   ];
-  return { people, entries, marks };
+  // ---- private notebooks. Each person only ever sees their own.
+  const notes = [
+    { id: 'n-john-1', by: 'john', date: dayAgo(2), at: ago(2), title: 'Tri-tip for six', cut: 'Tri-tip, 2.6 lb', heat: '225°F, then direct', time: '70 min', wood: 'Red oak',
+      text: 'Pulled at 126 and it carried over to 133, a touch past where I want it. Pull at 122 next time.\nChimichurri needed more vinegar.' },
+    { id: 'n-john-2', by: 'john', date: dayAgo(9), at: ago(9), title: 'Kettle vents',
+      text: 'Bottom vent a pencil-width open, top vent fully open. Holds 250 for about four hours on one chimney. Stop fiddling with it.' },
+    { id: 'n-john-3', by: 'john', date: dayAgo(20), at: ago(20), title: 'Things to try',
+      text: 'Dana’s white sauce on smoked turkey.\nAsk Marcus where he gets his post oak.\nDry brine the next chicken two days, not one.' },
+    { id: 'n-marcus-1', by: 'marcus', date: dayAgo(6), at: ago(6), title: 'Brisket, second try this month', cut: 'Packer, 13 lb', heat: '250°F', time: '13 hr', wood: 'Post oak',
+      text: 'Flat came out dry again. Wrap earlier, at 160, and rest longer.' },
+  ];
+  return { people, entries, marks, notes };
 }

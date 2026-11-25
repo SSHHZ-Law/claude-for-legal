@@ -1,7 +1,7 @@
 // Boot, routing, and the handful of things that happen when you tap.
 import { data } from './data.js';
 import * as V from './views.js';
-import { icon, toText, KINDS, cap } from './ui.js';
+import { icon, toText, KINDS, cap, today } from './ui.js';
 
 const view = document.getElementById('view'), tabs = document.getElementById('tabs'), toastEl = document.getElementById('toast');
 
@@ -9,7 +9,7 @@ const routes = [
   [/^\/?$/, V.home], [/^\/k\/([\w-]+)$/, V.list], [/^\/e\/([\w-]+)$/, V.detail],
   [/^\/add$/, V.addPick], [/^\/add\/(\w+)$/, V.form], [/^\/edit\/([\w-]+)$/, V.edit], [/^\/made\/([\w-]+)$/, V.made],
   [/^\/friends$/, V.friends], [/^\/p\/([\w-]+)$/, V.profile], [/^\/you$/, V.you], [/^\/who$/, V.who],
-  [/^\/trash$/, V.trash], [/^\/search$/, V.search],
+  [/^\/trash$/, V.trash], [/^\/search$/, V.search], [/^\/notebook$/, V.notebook], [/^\/note\/([\w-]+)$/, V.noteForm],
 ];
 const path = () => location.hash.replace(/^#/, '') || '/';
 const go = (to, replace) => replace ? location.replace('#' + to) : (location.hash = to);
@@ -27,11 +27,12 @@ let shown = null;
 
 async function render() {
   ctx = await context();
-  const p = path();
+  const full = path(), [p, qs = ''] = full.split('?');
+  ctx.query = Object.fromEntries(new URLSearchParams(qs));
   if (!ctx.me && p !== '/who') return go('/who', true);
   if (shown !== null) scrolls.set(shown, scrollY);
-  const goingBack = trail.length > 1 && trail[trail.length - 2] === p;
-  goingBack ? trail.pop() : (trail[trail.length - 1] !== p && trail.push(p));
+  const goingBack = trail.length > 1 && trail[trail.length - 2] === full;
+  goingBack ? trail.pop() : (trail[trail.length - 1] !== full && trail.push(full));
 
   let out = V.missing();
   for (const [re, fn] of routes) { const m = p.match(re); if (m) { out = await fn(ctx, ...m.slice(1).map(decodeURIComponent)); break; } }
@@ -43,8 +44,8 @@ async function render() {
     .map(([id, to, label, ic]) => id === 'add'
       ? `<a class="tab add" href="#${to}" ${out.tab === id ? 'aria-current="page"' : ''}><b>${icon(ic, 32, 2.6)}</b>${label}</a>`
       : `<a class="tab" href="#${to}" ${out.tab === id ? 'aria-current="page"' : ''}>${icon(ic)}${label}</a>`).join('');
-  shown = p;
-  scrollTo(0, goingBack ? (scrolls.get(p) || 0) : 0);
+  shown = full;
+  scrollTo(0, goingBack ? (scrolls.get(full) || 0) : 0);
   view.focus({ preventScroll: true });
 }
 
@@ -80,6 +81,12 @@ const actions = {
     toast('Moved to trash', async () => { await data.restoreEntry(id); toast('Restored'); render(); });
   },
   async restore(el) { await data.restoreEntry(el.dataset.id); toast('Restored'); render(); },
+  async 'delete-note'(el) {
+    const gone = await data.deleteNote(el.dataset.id, ctx.me.id);
+    if (!gone) return;
+    go('/notebook', true);
+    toast('Note deleted', async () => { await data.saveNote(gone); toast('Note restored'); render(); });
+  },
   async 'pick-me'(el) { await data.setMe(el.dataset.id); go('/', true); if (path() === '/') render(); },
   async theme() {
     const next = { auto: 'light', light: 'dark', dark: 'auto' }[await data.theme()];
@@ -118,12 +125,13 @@ document.addEventListener('submit', async ev => {
   ev.preventDefault();
   const fd = new FormData(form), get = k => String(fd.get(k) || '').trim();
   const file = fd.get('photo'), hasFile = file && file.size > 0;
-  const button = form.querySelector('[type=submit]');
+  const button = ev.submitter || form.querySelector('[type=submit]');
 
   if (form.dataset.form === 'entry') {
     const first = form.querySelector('[required]:invalid') || [...form.querySelectorAll('[required]')].find(i => !i.value.trim());
     if (first) { first.focus(); return toast(`Add a ${first.name === 'title' ? 'name' : first.name} first.`); }
     const kind = form.dataset.kind, old = form.dataset.id ? await data.entry(form.dataset.id) : null;
+    const fromNote = form.dataset.from ? await data.note(form.dataset.from, ctx.me.id) : null;
     const e = { ...(old || { kind, by: ctx.me.id }), title: get('title'), note: get('note') };
     for (const k of ['aka', 'serves', 'cut', 'heat', 'time', 'wood', 'pullAt', 'goodOn', 'type', 'maker', 'price', 'where', 'link', 'city', 'area', 'order']) if (fd.has(k)) e[k] = get(k);
     for (const k of ['ingredients', 'steps']) if (fd.has(k)) e[k] = linesOf(fd.get(k));
@@ -131,9 +139,26 @@ document.addEventListener('submit', async ev => {
     button.disabled = true;
     try {
       if (hasFile) e.photos = [await data.addPhoto(file, ctx.me.id), ...(old?.photos || []).slice(1)];
+      else if (fromNote?.photo) e.photos = [fromNote.photo];
       const saved = await data.saveEntry(e);
+      if (fromNote) await data.saveNote({ id: fromNote.id, sharedId: saved.id });
       go('/e/' + saved.id, true);
-      toast(`${cap(KINDS[kind].one)} saved`);
+      toast(fromNote ? 'Shared with the group' : `${cap(KINDS[kind].one)} saved`);
+    } catch { button.disabled = false; toast('That didn’t save. Try again, or try a smaller photo.'); }
+  }
+
+  if (form.dataset.form === 'note') {
+    if (!get('title') && !get('text')) { form.querySelector('[name=title]').focus(); return toast('Write something first.'); }
+    const old = form.dataset.id ? await data.note(form.dataset.id, ctx.me.id) : null;
+    const n = { ...(old || { by: ctx.me.id }), title: get('title'), text: get('text'), date: get('date') || old?.date || today() };
+    for (const k of ['cut', 'heat', 'time', 'wood']) n[k] = get(k);
+    button.disabled = true;
+    try {
+      if (hasFile) n.photo = await data.addPhoto(file, ctx.me.id);
+      const saved = await data.saveNote(n);
+      if (ev.submitter?.value === 'share') return go('/add?from=' + saved.id, true);
+      go('/notebook', true);
+      toast('Note saved');
     } catch { button.disabled = false; toast('That didn’t save. Try again, or try a smaller photo.'); }
   }
 

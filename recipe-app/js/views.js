@@ -2,7 +2,7 @@
 // and returns { html, title, tab, bare }. `bare` screens hide the tab bar (forms, the name picker).
 import { data } from './data.js';
 import { esc, cap, plural, list as listNames, icon, ring, day, onDay, avatar, cover, poster, photoTag, strip, ticket, slip,
-  verdictCard, splitQty, KINDS, KIND_ORDER, kindByPath, kindWord } from './ui.js';
+  verdictCard, splitQty, KINDS, KIND_ORDER, kindByPath, kindWord, noteCard, today } from './ui.js';
 
 const backBar = (label = 'Back', right = '') => `<header class="bar"><button class="ib" data-action="back" aria-label="${label}">${icon('back')}</button><div>${right}</div></header>`;
 const pair = (entries, ctx, label) => entries.length ? `<div class="pair">${entries.map(e => slip(e, ctx, { label: label?.(e) })).join('')}</div>` : '';
@@ -119,13 +119,17 @@ ${owner && !e.trashedAt ? `<div class="owner"><a class="btn small" href="#/edit/
 }
 
 // ---------------------------------------------------------------- add and edit
-export async function addPick() {
+export async function addPick(ctx) {
+  const from = ctx.query.from ? await data.note(ctx.query.from, ctx.me.id) : null;
+  const q = from ? `?from=${from.id}` : '';
   const say = { recipe: 'Ingredients and a method', sauce: 'Goes on before or after the fire', method: 'Cut, heat, time and wood', find: 'Something worth buying, with a link', place: 'Somewhere worth going' };
   const html = `${backBar('Back')}
-<h1 class="title">Add something</h1>
-<p class="lede" style="margin-bottom:0">What is it?</p>
-<nav class="choose" aria-label="Kinds">${KIND_ORDER.map(k => `<a href="#/add/${k}"><span><b>${esc(cap(KINDS[k].one))}</b><small>${say[k]}</small></span>${icon('go', 28, 2.4)}</a>`).join('')}</nav>`;
-  return { html, title: 'Add something', tab: 'add' };
+<h1 class="title">${from ? 'Share with the group' : 'Add something'}</h1>
+<p class="lede" style="margin-bottom:0">${from ? `What should “${esc(from.title || 'this note')}” become? You can tidy it up before anyone sees it.` : 'What is it?'}</p>
+<nav class="choose" aria-label="Kinds">${KIND_ORDER.map(k => `<a href="#/add/${k}${q}"><span><b>${esc(cap(KINDS[k].one))}</b><small>${say[k]}</small></span>${icon('go', 28, 2.4)}</a>`).join('')}</nav>
+${from ? '' : `<div class="stack"><a class="btn" href="#/note/new">${icon('lock', 22, 2.2)}A private note</a></div>
+<p class="lede" style="margin-top:10px">A private note goes in your notebook. Only you see it, and you can share it with the group later.</p>`}`;
+  return { html, title: from ? 'Share with the group' : 'Add something', tab: from ? 'you' : 'add' };
 }
 
 const f = (name, label, v, { ph = '', hint = '', area = false, big = false, type = 'text', req = false, mode = '' } = {}) =>
@@ -161,22 +165,27 @@ function fields(e) {
   }
 }
 
-function formView(e, isNew) {
+function formView(e, isNew, fromNote) {
   const K = KINDS[e.kind], ph = e.photos?.[0];
   const html = `${backBar('Cancel')}
-<h1 class="title" style="font-size:50px">${isNew ? 'Add a ' + esc(K.one) : 'Edit ' + esc(K.one)}</h1>
-<p class="lede">Only the name is required. Fill in the rest now or come back to it.</p>
-<form data-form="entry" data-kind="${e.kind}" ${isNew ? '' : `data-id="${e.id}"`} novalidate>
+<h1 class="title" style="font-size:50px">${fromNote ? 'Share a ' + esc(K.one) : isNew ? 'Add a ' + esc(K.one) : 'Edit ' + esc(K.one)}</h1>
+<p class="lede">${fromNote ? 'Started from your notebook. The group sees what you save here; your note stays private.' : 'Only the name is required. Fill in the rest now or come back to it.'}</p>
+<form data-form="entry" data-kind="${e.kind}" ${isNew ? '' : `data-id="${e.id}"`} ${fromNote ? `data-from="${fromNote}"` : ''} novalidate>
   ${f('title', 'Name', e.title, { big: true, req: true, ph: e.kind === 'place' ? 'Name of the place' : 'What is it called?' })}
   <label class="pick${ph ? ' has' : ''}"><input type="file" name="photo" accept="image/*" data-change="preview">${ph
     ? `<img src="${esc(data.photoUrl(ph.src))}" alt=""><b>Change photo</b>`
     : `${icon('camera', 30, 2)}<span>Add a photo<small>Your name goes on it</small></span>`}</label>
   ${fields(e)}
-  <div class="savebar"><button class="btn pri" type="submit">Save ${esc(K.one)}</button></div>
+  <div class="savebar"><button class="btn pri" type="submit">${fromNote ? 'Share' : 'Save'} ${esc(K.one)}</button></div>
 </form>`;
   return { html, title: isNew ? 'Add a ' + K.one : 'Edit', bare: true };
 }
-export async function form(ctx, kind) { return KINDS[kind] ? formView({ kind, photos: [] }, true) : missing(); }
+export async function form(ctx, kind) {
+  if (!KINDS[kind]) return missing();
+  const n = ctx.query.from ? await data.note(ctx.query.from, ctx.me.id) : null;
+  if (!n) return formView({ kind, photos: [] }, true);
+  return formView({ kind, title: n.title, note: n.text, cut: n.cut, heat: n.heat, time: n.time, wood: n.wood, photos: n.photo ? [n.photo] : [] }, true, n.id);
+}
 export async function edit(ctx, id) {
   const e = await data.entry(id);
   if (!e || e.by !== ctx.me.id) return missing('Only the person who added this can edit it.');
@@ -213,11 +222,12 @@ export async function friends(ctx) {
   return { html: `${backBar()}<h1 class="title">Friends</h1><p class="lede">${plural(ctx.people.length, 'person', 'people')} around the fire</p>${cards}`, title: 'Friends', tab: 'friends' };
 }
 
-async function personBody(ctx, p) {
+async function personBody(ctx, p, extra = '') {
   const [entries, verdicts, all] = await Promise.all([data.entries({ by: p.id }), data.verdicts({ by: p.id }), data.entries()]);
   const byId = Object.fromEntries(all.map(e => [e.id, e]));
   const you = p.id === ctx.me.id;
   return `<div class="hero">${avatar(p, 'l')}<h1 class="title">${esc(p.name)}</h1><p>${esc(p.about)}</p><p class="tally">${tally(entries.length, verdicts.length)}</p></div>
+${extra}
 <h2 class="head">${you ? 'You added' : 'Added by ' + esc(p.name)}</h2>
 ${entries.length ? pair(entries, ctx) : `<p class="lede">${you ? 'Nothing yet. The red button adds your first.' : 'Nothing yet.'}</p>`}
 <h2 class="head">${you ? 'Your verdicts' : esc(p.name) + '’s verdicts'}</h2>
@@ -229,9 +239,12 @@ export async function profile(ctx, id) {
   return { html: backBar() + await personBody(ctx, p), title: p.name, tab: 'friends' };
 }
 export async function you(ctx) {
-  const [theme, trashed] = await Promise.all([data.theme(), data.trashed()]);
+  const [theme, trashed, notes] = await Promise.all([data.theme(), data.trashed(), data.notes(ctx.me.id)]);
+  const book = `<h2 class="head">Your notebook <small class="only">${icon('lock', 16, 2)}Only you see this</small></h2>
+${notes.length ? notes.slice(0, 2).map(noteCard).join('') : `<p class="lede" style="margin-bottom:0">Log a cook, or jot down something to remember. It stays private unless you share it.</p>`}
+<div class="row"><a class="btn small" href="#/note/new">Write a note</a>${notes.length > 2 ? `<a class="link" href="#/notebook">All ${notes.length} notes</a>` : notes.length ? `<a class="link" href="#/notebook">Open notebook</a>` : ''}</div>`;
   const label = { auto: 'Match this phone', light: 'Light', dark: 'Dark' }[theme];
-  const html = `${backBar()}${await personBody(ctx, ctx.me)}
+  const html = `${backBar()}${await personBody(ctx, ctx.me, book)}
 <h2 class="head">This phone</h2>
 <div class="settings">
   <a href="#/who"><span>Not ${esc(ctx.me.name)}?</span><em>Switch person</em></a>
@@ -246,6 +259,40 @@ export async function who(ctx) {
 <p class="lede" style="margin-bottom:0">Pick your name. This phone will remember it.</p>
 <div class="who">${ctx.people.map(p => `<button data-action="pick-me" data-id="${p.id}">${avatar(p)}<b>${esc(p.name)}</b></button>`).join('')}</div>`;
   return { html, title: 'Who’s cooking?', bare: true };
+}
+
+// ---------------------------------------------------------------- private notebook
+export async function notebook(ctx) {
+  const notes = await data.notes(ctx.me.id);
+  const html = `${backBar()}<h1 class="title">Notebook</h1>
+<p class="lede only">${icon('lock', 18, 2)}<span>Only you see these. Share one with the group when it’s ready.</span></p>
+<div class="stack" style="margin-top:0;margin-bottom:24px"><a class="btn pri" href="#/note/new">Write a note</a></div>
+${notes.length ? notes.map(noteCard).join('') : empty('Nothing here yet', 'Log a cook, or jot down something to remember.')}`;
+  return { html, title: 'Notebook', tab: 'you' };
+}
+export async function noteForm(ctx, id) {
+  const isNew = id === 'new';
+  const n = isNew ? { date: today() } : await data.note(id, ctx.me.id);
+  if (!n) return missing('That note isn’t in your notebook.');
+  const shared = n.sharedId ? await data.entry(n.sharedId) : null;
+  const html = `${backBar('Cancel')}
+<h1 class="title" style="font-size:50px">${isNew ? 'New note' : 'Your note'}</h1>
+<p class="lede only">${icon('lock', 18, 2)}<span>Only you see this.</span></p>
+<form data-form="note" ${isNew ? '' : `data-id="${n.id}"`} novalidate>
+  ${f('title', 'What is it?', n.title, { big: true, ph: 'Tri-tip for six, kettle vents, things to try' })}
+  ${f('text', 'Notes', n.text, { area: true, ph: 'What you did, what happened, what to change next time.' })}
+  ${f('date', 'When', n.date, { type: 'date' })}
+  <p class="legend" style="margin:0 16px 10px"><span>The cook</span><i>Optional</i></p>
+  ${pitFields(n)}
+  <label class="pick${n.photo ? ' has' : ''}"><input type="file" name="photo" accept="image/*" data-change="preview">${n.photo
+    ? `<img src="${esc(data.photoUrl(n.photo.src))}" alt=""><b>Change photo</b>`
+    : `${icon('camera', 30, 2)}<span>Add a photo<small>Optional</small></span>`}</label>
+  ${isNew ? '' : `<div class="stack" style="margin-top:8px">
+    ${shared && !shared.trashedAt ? `<p style="font:var(--t-body)">Shared with the group as <a class="link" href="#/e/${shared.id}">${esc(shared.title)}</a>.</p>` : `<button class="btn" type="submit" name="then" value="share">Share with the group</button>`}
+    <div><button class="link" type="button" data-action="delete-note" data-id="${n.id}" style="min-height:48px">Delete note</button></div></div>`}
+  <div class="savebar"><button class="btn pri" type="submit">Save note</button></div>
+</form>`;
+  return { html, title: isNew ? 'New note' : n.title || 'Your note', bare: true };
 }
 
 // ---------------------------------------------------------------- trash

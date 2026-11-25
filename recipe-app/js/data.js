@@ -14,6 +14,11 @@
 //   entry   { id, kind: recipe|sauce|method|find|place, title, by, at, note, photos: [{ src, by, credit }],
 //             ...fields for its kind, trashedAt, trashedBy }
 //   verdict { id, entryId, by, rating: 1-5, note, at }   one per person per entry
+//   note    { id, by, date: 'YYYY-MM-DD', title, text, cut, heat, time, wood, photo: { src, by }, sharedId, at }
+//
+// Private notebook: notes are only ever handed back to the person who wrote them, and they never
+// appear in entries(), search() or the trash. When this moves to a shared Sheet, decide first
+// whether notes should sync at all: whoever owns the Sheet can read every row in it.
 
 import { seed } from './seed.js';
 
@@ -122,6 +127,26 @@ export const data = {
     else d.marks.push(m = { id: uid('k'), entryId, by, rating, note, at: nowIso() });
     write();
     return copy(m);
+  },
+
+  // ---- private notebook ----
+  async notes(ownerId) {
+    return copy((read().notes || []).filter(n => n.by === ownerId).sort((a, b) => (a.date === b.date ? (a.at < b.at ? 1 : -1) : (a.date < b.date ? 1 : -1))));
+  },
+  async note(id, ownerId) { const n = (read().notes || []).find(n => n.id === id && n.by === ownerId); return n ? copy(n) : null; },
+  async saveNote(note) {
+    const d = read(); d.notes ||= [];
+    const i = d.notes.findIndex(n => n.id === note.id);
+    if (i >= 0) d.notes[i] = { ...d.notes[i], ...note };
+    else d.notes.push(note = { ...note, id: note.id || uid('n'), at: note.at || nowIso() });
+    write();
+    return copy(i >= 0 ? d.notes[i] : note);
+  },
+  // Notes are deleted outright (the shared trash would expose them). Returns the note so the app can offer Undo.
+  async deleteNote(id, ownerId) {
+    const d = read(), i = (d.notes || []).findIndex(n => n.id === id && n.by === ownerId);
+    if (i < 0) return null;
+    const [gone] = d.notes.splice(i, 1); write(); return copy(gone);
   },
 
   // ---- photos ----
